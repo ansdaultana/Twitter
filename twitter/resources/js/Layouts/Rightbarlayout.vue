@@ -1,0 +1,146 @@
+<script setup>
+
+import { router, usePage } from '@inertiajs/vue3';
+import { ref, watch, computed, watchEffect } from 'vue';
+
+import { onMounted, onUnmounted } from 'vue';
+const page = usePage();
+const users = computed(() => page.props.users);
+let currentPath = ref(window.location.pathname);
+let searchValue = ref('');
+
+
+const checkWindowLocation = () => {
+    //if new location is /users/username and old loc is '/' then currentpath.val will be /users/username
+
+    const newLocation = window.location.pathname;
+    if (newLocation !== currentPath.value) {
+        currentPath.value = newLocation;
+        searchValue.value = '';
+    }
+};
+onMounted(() => {
+    setInterval(checkWindowLocation, 100);
+});
+watch(searchValue, value => {
+
+    router.get(currentPath.value, { search: value }, { preserveState: true });
+});
+const navigateToUser = (searchedUser) => {
+    const username = searchedUser.username;
+    router.get(`/users/${username}`);
+
+};
+let trending = [
+    { top: 'Music', title: 'We Won', bottom: '135K Tweets' },
+    { top: 'Pop', title: 'Blue Ivy', bottom: '40k tweets' },
+    { top: 'Trending in US', title: 'Denim Day', bottom: '40k tweets' },
+    { top: 'Trending', title: 'When Beyonce', bottom: '25.4k tweets' },
+];
+
+
+let friends = [
+    {
+        src: "https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
+        , name: 'Adrian Monk', handle: '@detective:)'
+    },
+    {
+        src: "https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
+        , name: 'Kevin Hart', handle: '@miniRock'
+    }
+];
+</script>
+
+<template>
+    <div name="feed" class="md:block border-l border-gray-800 hidden w-1/3 h-full py-2 px-6 relative">
+        <input v-model="searchValue" class=" pl-12  rounded-full w-80 p-2 text-white bg-[#181818] text-sm"
+            placeholder="Search Twitter" />
+        <div v-if="searchValue !== ''" name="search"
+            class="max-h-96 overflow-y-auto  w-80 rounded-lg bg-[#181818] border-l border-r border-b mb-2 border-gray-800 overflow-y-scroll scrollbar-hide ring-[#48C9B0] ring-opacity-50">
+
+            <div class=" p-3">
+                <p class="text-lg font-bold text-[#48C9B0]">Results</p>
+            </div>
+            <button @click="navigateToUser(searchedUser)" v-for="searchedUser in users" :key="searchedUser.id"
+                class="cursor-pointer transition duration-200 ease-in-out w-full flex hover:bg-[#2F2F2F]   p-3 ">
+                <img src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
+                    class="w-12 h-12 rounded-full border border-lighter" />
+                <div class="hidden lg:block ml-4 ">
+                    <p class="text-md font-bold leading-tight text-white "> {{ searchedUser.name }} </p>
+
+                    <div class="flex ">
+                        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                            class="w-4 h-4 mt-1 text-dark ml-2">
+                            <path stroke-linecap="round"
+                                d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 10-2.636 6.364M16.5 12V8.25" />
+                        </svg>
+                        <p class="text-sm  leading-tight text-gray-400 w-12"> {{ searchedUser.username }} </p>
+
+                    </div>
+                </div>
+
+            </button>
+
+        </div>
+        <div v-if="searchValue === ''" name="tags" class="w-80 rounded-lg border mt-4 border-gray-800 bg-[#181818]">
+            <div class="flex items-center justify-between p-3">
+                <p class="text-lg text-[#48C9B0] font-bold">Trends for You</p>
+                <i class="fas fa-cog text-lg text-blue"></i>
+            </div>
+            <button v-for="trend in trending"
+                class="w-80 flex justify-between hover:bg-[#2F2F2F] p-3 cursor-pointer transition duration-200 ease-in-out">
+                <div>
+                    <p class="text-xs text-left leading-tight text-dark"> {{ trend.top }} </p>
+                    <p class="font-semibold text-white  text-sm text-left leading-tight"> {{ trend.title }} </p>
+                    <p class="text-left text-sm leading-tight text-dark"> {{ trend.bottom }} </p>
+                </div>
+                <i class="fas fa-angle-down text-lg text-dark"></i>
+            </button>
+            <button class="p-3 w-full hover:bg-[#2F2F2F] text-left text-[#48C9B0]">
+                Show More
+            </button>
+        </div>
+        <div class="w-80 rounded-lg bg-[#181818] border mb-2 border-gray-800 my-4">
+            <div class=" p-3">
+                <p class="text-lg font-bold text-[#48C9B0]">Who to Follow</p>
+            </div>
+            <button v-for="friend in friends"
+                class="cursor-pointer transition duration-200 ease-in-out w-full flex hover:bg-[#2F2F2F]   p-3 ">
+                <img :src="`${friend.src}`" class="w-12 h-12 rounded-full border border-lighter" />
+                <div class="hidden lg:block ml-4">
+                    <p class="text-sm font-bold leading-tight text-white"> {{ friend.name }} </p>
+                    <p class="text-sm leading-tight text-gray-500"> {{ friend.handle }} </p>
+                </div>
+                <button class="ml-auto text-sm text-[#48C9B0] py-1 px-4 rounded-full border-2 border-[#48C9B0]">
+                    Follow
+                </button>
+            </button>
+            <button class="p-3 w-full hover:bg-[#2F2F2F] text-left text-[#48C9B0] ">
+                Show More
+            </button>
+        </div>
+    </div>
+</template>
+<style>
+body {
+    background-color: black;
+}
+
+/* Hide the scroll bar */
+.scrollbar-hide::-webkit-scrollbar {
+    width: 0.4em;
+    background-color: transparent;
+}
+
+
+
+
+/* Optional: Add a custom color for the thumb */
+.scrollbar-hide::-webkit-scrollbar-thumb {
+    background-color: #888;
+}
+
+/* Optional: Add hover styles for the thumb */
+.scrollbar-hide::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}</style>

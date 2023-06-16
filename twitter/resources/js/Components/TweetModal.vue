@@ -1,0 +1,88 @@
+<script setup>
+import { ref,  inject,  computed } from 'vue';
+import Close from 'vue-material-design-icons/Close.vue';
+import ImageOutline from 'vue-material-design-icons/ImageOutline.vue';
+import FileGifBox from 'vue-material-design-icons/FileGifBox.vue';
+import Emoticon from 'vue-material-design-icons/Emoticon.vue';
+import { useForm } from '@inertiajs/vue3'
+
+
+const tweetsidebtn = ref(inject('tweetsidebtn'));
+
+
+const closemodal = () => {
+  tweetsidebtn.value = !tweetsidebtn.value;
+
+}
+
+const isTweetSideBtnVisible = computed(() => {
+  return tweetsidebtn.value === true;
+});
+
+
+
+let newTweet = useForm({
+    text: ""
+});
+
+let addNewTweet = () => {
+  tweetsidebtn.value = !tweetsidebtn.value;
+
+    newTweet.post('/createtweet');
+    newTweet.text=''
+}
+</script>
+
+<template>
+  <div v-if="isTweetSideBtnVisible"
+    class="transition duration-200  transition-scale fixed   md:w-1/2 flex items-center justify-center rounded ">
+
+    <div class="bg-black rounded border border-gray-800 w-screen m-10 bg-opacity-90">
+
+      <button class="cursor-pinter p-2 bg-opacity-90" @click="closemodal">
+        <Close size=20 fillColor="white" />
+      </button>
+      <div class="px-5 py-3 border-gray-800 border-b flex  bg-black">
+        <div class="flex-none">
+          <img
+            src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
+            class="w-12 h-12 rounded-full border border-lighter" />
+        </div>
+        <button>
+          <Close />
+        </button>
+        <form v-on:submit.prevent="addNewTweet" class="w-full px-4 relative">
+          <textarea  v-model="newTweet.text"  placeholder="What's up?"
+            class="mt-3 pb-3 bg-black text-white w-full focus:outline-none" rows="5"  required minlength="3" autofocus/>
+            <div v-if="newTweet.errors.text" v-text="newTweet.errors.text" class="text-red-500 text-xs mt-1">
+            </div>
+
+          <div class="flex items-center gap-8  border-t mt-4 p-4 border-gray-800">
+            <div class="hover:bg-gray-800 cursor-pointer p-2 rounded-full">
+              <label for="fileUpload" class="cursor-pointer">
+                <ImageOutline fillColor="#48C9B0" :size=22 class="cursor-pointer" />
+              </label>
+              <input type="file" id="fileUpload" class="hidden" @change="get">
+            </div>
+            <div class="hover:bg-gray-800 cursor-pointer p-2 rounded-full">
+              <FileGifBox fillColor="#48C9B0" :size=22 class="cursor-pointer" />
+            </div>
+            <div class="hover:bg-gray-800 cursor-pointer p-2 rounded-full">
+              <Emoticon fillColor="#48C9B0" :size=22 class="cursor-pointer" />
+            </div>
+          </div>
+
+          <button 
+          :disabled="newTweet.processing"
+          type="submit" 
+            class="h-10 px-4 text-white font-semibold bg-[#48C9B0] hover:bg-[#78C9B0] focus:outline-none rounded-full absolute bottom-0 right-0">
+            Tweet
+          </button>
+        </form>
+      </div>
+
+
+    </div>
+  </div>
+</template>
+

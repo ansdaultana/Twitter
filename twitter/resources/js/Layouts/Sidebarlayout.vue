@@ -30,7 +30,7 @@ const VisitProfile = (username) => {
   
     router.get(`/${username}`);
   }
-  dropdown = false
+  dropdown.value = false
 }
 </script>
 

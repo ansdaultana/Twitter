@@ -16,7 +16,6 @@ const page = usePage();
 const BeingVieweduser = ref(page.props.BeingVieweduser);
 const users = computed(() => page.props.users);
 const profile = computed(() => page.props.profile);
-const authUser = computed(() => page.props.auth.user);
 
 const followerCount =computed(()=>page.props.followerCount);
 const followingCount =computed(()=>page.props.followingCount);
@@ -38,10 +37,20 @@ const followOrUnfollow = async (username) => {
     }
 }
 
+const ShowFollowing= (username) =>
+{
+router.get(`/${username}/following`);
+
+}
+const ShowFollower= (username) =>
+{
+router.get(`/${username}/follower`);
+
+}
 
 </script>
 <template>
-    <div name="feed" class="w-full md:w-1/2 h-full overflow-y-scroll scrollbar-hide">
+    <div class="w-full md:w-1/2 h-full overflow-y-scroll scrollbar-hide">
         <div class="flex-col">
             <div class="px-5 py-2 border-gray-900 border-b flex justify-between">
                 <div class="flex">
@@ -101,10 +110,15 @@ const followOrUnfollow = async (username) => {
                 </div>
             </div>
             <div class="flex">
-                <button class="text-gray-400 ml-4">
+                <button 
+                @click="ShowFollowing(BeingVieweduser.username)"
+                class="text-gray-400 ml-4">
                    {{ followingCount }} following
                 </button>
-                <button class="text-gray-400 ml-4">
+                <button 
+                @click="ShowFollower(BeingVieweduser.username)"
+                
+                class="text-gray-400 ml-4">
                     {{ followerCount }}  followers
                 </button>
             </div>

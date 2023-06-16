@@ -25,12 +25,36 @@ Route::get('/',[TweetController::class,'index']);
 Route::get('/users/{user:username}',[UserController::class,'show'])->name('user.show');
 Route::get('/{user:username}',[UserController::class,'index'])->name('user.index');
 
+Route::get('/{user:username}/follower',[UserController::class,'showfollower'])->name('userfollowers');
+Route::get('/{user:username}/following',[UserController::class,'showfollowing'])->name('userfollowing');
 
 
 Route::post('/createtweet',[TweetController::class,'create'])->name('tweet.create');
 Route::post('/users/{user:username}/follow',[UserController::class,'follow'])->name('user.follow');
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

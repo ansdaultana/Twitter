@@ -87,6 +87,7 @@ let friends = [
                 <p class="text-lg text-[#48C9B0] font-bold">Trends for You</p>
                 <i class="fas fa-cog text-lg text-blue"></i>
             </div>
+            
             <button v-for="trend in trending"
                 class="w-80 flex justify-between hover:bg-[#2F2F2F] p-3 cursor-pointer transition duration-200 ease-in-out">
                 <div>

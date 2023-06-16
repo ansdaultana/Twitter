@@ -16,7 +16,10 @@ const checkWindowLocation = () => {
     const newLocation = window.location.pathname;
     if (newLocation !== currentPath.value) {
         currentPath.value = newLocation;
+        console.log(currentPath.value);
         searchValue.value = '';
+        console.log(searchValue.value);
+
     }
 };
 onMounted(() => {
@@ -87,7 +90,7 @@ let friends = [
                 <p class="text-lg text-[#48C9B0] font-bold">Trends for You</p>
                 <i class="fas fa-cog text-lg text-blue"></i>
             </div>
-            
+
             <button v-for="trend in trending"
                 class="w-80 flex justify-between hover:bg-[#2F2F2F] p-3 cursor-pointer transition duration-200 ease-in-out">
                 <div>
@@ -144,4 +147,5 @@ body {
 /* Optional: Add hover styles for the thumb */
 .scrollbar-hide::-webkit-scrollbar-thumb:hover {
     background-color: #555;
-}</style>
+}
+</style>

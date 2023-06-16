@@ -112,24 +112,43 @@ class UserController extends Controller
     public function showfollower(User $user)
     {
         $followers = $user->followers()->get();
+        $search = Request::input('search');
 
         return Inertia::render(
             'Followers',
             [
                 'followers' => $followers,
                 "BeingVieweduser" => $user,
+                'users' => $search ? User::query()
+                ->where(function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('username', 'like', '%' . $search . '%');
+                })
+                ->where('id', '!=', auth()->user()->id)
+                ->limit(20)
+                ->get() : [],
 
             ]
         );
     }
     public function showfollowing(User $user)
     {
+        $search = Request::input('search');
+
         $following = $user->following()->get();
         return Inertia::render(
             'Following',
             [
                 'following' => $following,
                 "BeingVieweduser" => $user,
+                'users' => $search ? User::query()
+                ->where(function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('username', 'like', '%' . $search . '%');
+                })
+                ->where('id', '!=', auth()->user()->id)
+                ->limit(20)
+                ->get() : [],
 
             ]
         );

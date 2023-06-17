@@ -66,7 +66,7 @@ let friends = [
                 class="cursor-pointer transition duration-200 ease-in-out w-full flex hover:bg-[#2F2F2F]   p-3 ">
                 <img src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
                     class="w-12 h-12 rounded-full border border-lighter" />
-                <div class="hidden lg:block ml-4 ">
+                <div class=" ml-4 ">
                     <p class="text-md font-bold leading-tight text-white "> {{ searchedUser.name }} </p>
 
                     <div class="flex ">

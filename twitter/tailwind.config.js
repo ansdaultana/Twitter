@@ -23,7 +23,8 @@ export default {
                 'light': '#AAB8C2',
                 'lighter': '#E1E8ED',
                 'lightest': '#F5F8FA',
-                "primary":"#48C9B0"
+                "primary":"#48C9B0",
+                'zinc':'#48C9B0'
 
               }
             ,

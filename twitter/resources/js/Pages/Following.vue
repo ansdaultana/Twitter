@@ -11,25 +11,36 @@ const page = usePage();
 const BeingVieweduser = ref(page.props.BeingVieweduser);
 const authUser = computed(() => page.props.auth.user);
 
-const following = computed(() => page.props.following);
+const followings = computed(() => page.props.following);
 const back = () => {
-    router.get("/");
+    router.get("/home");
 }
 const ShowFollower = (username) => {
     router.get(`/${username}/follower`);
 
 }
-const navigateToUser = (username) => {
-    if (username === authUser.value.username) {
-        router.get(`/${username}`);
+
+const navigateToUser = (following) => {
+    if (following.username === authUser.value.username) {
+        router.get(`/${following.username}`);
     }
     else {
-        const username = follower.username;
+        const username = following.username;
         router.get(`/users/${username}`);
 
     }
 
 };
+const followOrUnfollow = async (following) => {
+
+    try {
+        const response = await axios.post(`/users/${following.username}/follow`)
+        following.isFollowing = response.data.isFollowing;
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 </script>
 
 
@@ -65,25 +76,46 @@ const navigateToUser = (username) => {
                  </span>
             </button>
         </div>
-        <div @click="navigateToUser(follower.username)" v-for="follower in following" :key="follower.id"
-            class="cursor-pointer transition duration-200 ease-in-out w-full flex hover:bg-gray-800  ml-4  p-3 ">
+        <div  v-for="following in followings" :key="following.id" @click="navigateToUser(following)"
+        class="cursor-pointer transition duration-200 ease-in-out w-full flex justify-between hover:bg-gray-800  ml-4  p-3 ">
+        <div class="flex ">
             <img src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
                 class="w-12 h-12 rounded-full border border-lighter" />
-            <div class="hidden lg:block ml-4 ">
-                <p class="text-md font-bold leading-tight text-white "> {{ follower.name }} </p>
+            <div class=" lg:block ml-4 ">
+                <p class="text-md font-bold leading-tight text-white "> {{ following.name }} </p>
 
                 <div class="flex ">
+
                     <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="w-4 h-4 mt-1 text-dark ml-2">
                         <path stroke-linecap="round"
                             d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 10-2.636 6.364M16.5 12V8.25" />
                     </svg>
-                    <p class="text-sm  leading-tight text-gray-400 w-12"> {{ follower.username }} </p>
+                    <p class="text-sm  leading-tight text-gray-400 w-12"> {{ following.username }} </p>
 
                 </div>
+
             </div>
+        </div>
+
+        <div v-if="following.profile === false">
+            <button @click="followOrUnfollow(following); $event.stopPropagation()" class=" mr-4" 
+                @mouseenter="following.isHovered = true"
+                @mouseleave="following.isHovered = false">
+                <div v-if="following.isFollowing"
+                    class=" text-sm text-[#48C9B0] py-1 px-4 rounded-full border-2 hover:text-red-800 hover:bg-red-400 hover:border-red-800 border-[#48C9B0]">
+                    {{ !following.isHovered? 'Following' : 'Unfollow' }}
+
+                </div>
+                <div v-if="!following.isFollowing"
+                    class=" text-sm text-[#48C9B0] py-1 px-4 rounded-full border-2 hover:text-black hover:bg-[#48C9B0] border-[#48C9B0]">
+                    follow
+
+                </div>
+            </button>
 
         </div>
+    </div>
     </div>
 
     <TweetModal />

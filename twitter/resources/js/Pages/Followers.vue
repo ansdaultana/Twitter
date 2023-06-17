@@ -13,15 +13,15 @@ const authUser = computed(() => page.props.auth.user);
 
 const followers = computed(() => page.props.followers);
 const back = () => {
-    router.get("/");
+    router.get("/home");
 }
 const ShowFollowing = (username) => {
     router.get(`/${username}/following`);
 
 }
-const navigateToUser = (username) => {
-    if (username === authUser.value.username) {
-        router.get(`/${username}`);
+const navigateToUser = (follower) => {
+    if (follower.username === authUser.value.username) {
+        router.get(`/${follower.username}`);
     }
     else {
         const username = follower.username;
@@ -30,6 +30,17 @@ const navigateToUser = (username) => {
     }
 
 };
+const followOrUnfollow = async (follower) => {
+
+    try {
+        const response = await axios.post(`/users/${follower.username}/follow`)
+        follower.isFollowing = response.data.isFollowing;
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
 </script>
 
 
@@ -64,25 +75,47 @@ const navigateToUser = (username) => {
                 Following
             </button>
         </div>
-        <div @click="navigateToUser(follower.username)" v-for="follower in followers" :key="follower.id"
-            class="cursor-pointer transition duration-200 ease-in-out w-full flex hover:bg-gray-800  ml-4  p-3 ">
-            <img src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
-                class="w-12 h-12 rounded-full border border-lighter" />
-            <div class="hidden lg:block ml-4 ">
-                <p class="text-md font-bold leading-tight text-white "> {{ follower.name }} </p>
+        <div  v-for="follower in followers" :key="follower.id" @click="navigateToUser(follower)"
+            class="cursor-pointer transition duration-200 ease-in-out w-full flex justify-between hover:bg-gray-800  ml-4  p-3 ">
+            <div class="flex ">
+                <img src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
+                    class="w-12 h-12 rounded-full border border-lighter" />
+                <div class=" lg:block ml-4 ">
+                    <p class="text-md font-bold leading-tight text-white "> {{ follower.name }} </p>
 
-                <div class="flex ">
-                    <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                        class="w-4 h-4 mt-1 text-dark ml-2">
-                        <path stroke-linecap="round"
-                            d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 10-2.636 6.364M16.5 12V8.25" />
-                    </svg>
-                    <p class="text-sm  leading-tight text-gray-400 w-12"> {{ follower.username }} </p>
+                    <div class="flex ">
+
+                        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                            class="w-4 h-4 mt-1 text-dark ">
+                            <path stroke-linecap="round"
+                                d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 10-2.636 6.364M16.5 12V8.25" />
+                        </svg>
+                        <p class="text-sm  leading-tight text-gray-400 w-12"> {{ follower.username }} </p>
+
+
+                    </div>
 
                 </div>
             </div>
 
+            <div v-if="follower.profile === false">
+                <button @click="followOrUnfollow(follower); $event.stopPropagation()" class=" mr-4" @mouseenter="follower.isHovered = true"
+                    @mouseleave="follower.isHovered = false">
+                    <div v-if="follower.isFollowing"
+                        class=" text-sm text-[#48C9B0] py-1 px-4 rounded-full border-2 hover:text-red-800 hover:bg-red-400 hover:border-red-800 border-[#48C9B0]">
+                        {{ !follower.isHovered ? 'Following' : 'Unfollow' }}
+
+                    </div>
+                    <div v-if="!follower.isFollowing"
+                        class=" text-sm text-[#48C9B0] py-1 px-4 rounded-full border-2 hover:text-black hover:bg-[#48C9B0] border-[#48C9B0]">
+                        follow
+
+                    </div>
+                </button>
+
+            </div>
         </div>
+
     </div>
 
     <TweetModal />

@@ -13,6 +13,10 @@ use SebastianBergmann\Environment\Console;
 
 class TweetController extends Controller
 {
+    public function new()
+    {
+        return Inertia::render('Login');
+    }
 
     public function index()
     {

@@ -16,9 +16,7 @@ const checkWindowLocation = () => {
     const newLocation = window.location.pathname;
     if (newLocation !== currentPath.value) {
         currentPath.value = newLocation;
-        console.log(currentPath.value);
         searchValue.value = '';
-        console.log(searchValue.value);
 
     }
 };

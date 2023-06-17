@@ -87,6 +87,11 @@ class UserController extends Controller
         if (!$targetUser) {
             abort(404, 'User not found');
         }
+        if($targetUser->username===$loggedInUser->username)
+        {
+            abort(403, 'Forbidden');
+
+        }
         // Check if the logged-in user is already following the target user
         //go to auth user
         //in its following
@@ -110,8 +115,14 @@ class UserController extends Controller
     }
 
     public function showfollower(User $user)
+    
     {
-        $followers = $user->followers()->get();
+        $followers = $user->followers()->latest()->get()->map(function ($user) {
+            $user['isFollowing'] = $this->isFollowing($user->username);
+            $user['profile']=auth()->user()->username === $user->username;
+            $user['isHovered']=false;
+            return $user;
+        }) ;
         $search = Request::input('search');
 
         return Inertia::render(
@@ -134,11 +145,16 @@ class UserController extends Controller
     public function showfollowing(User $user)
     {
         $search = Request::input('search');
+        $following = $user->following()->latest()->get()->map(function ($user) {
+            $user['isFollowing'] = $this->isFollowing($user->username);
+            $user['profile']=auth()->user()->username === $user->username;
+            $user['isHovered']=false;
 
-        $following = $user->following()->get();
+            return $user;
+        }) ; 
         return Inertia::render(
             'Following',
-            [
+            [   
                 'following' => $following,
                 "BeingVieweduser" => $user,
                 'users' => $search ? User::query()
@@ -148,7 +164,8 @@ class UserController extends Controller
                 })
                 ->where('id', '!=', auth()->user()->id)
                 ->limit(20)
-                ->get() : [],
+                ->get()
+                : [],
 
             ]
         );

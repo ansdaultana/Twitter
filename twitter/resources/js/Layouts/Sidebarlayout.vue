@@ -22,7 +22,7 @@ const logout = () => {
 };
 
 const goToHome = () => {
-  router.get('/');
+  router.get('/home');
 }
 
 const VisitProfile = (username) => {

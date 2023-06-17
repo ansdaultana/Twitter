@@ -24,7 +24,7 @@ const isFollowing = ref(page.props.auth_is_following_opened_user);
 
 
 const back = () => {
-    router.get("/");
+    router.get("/home");
 }
 
 const followOrUnfollow = async (username) => {

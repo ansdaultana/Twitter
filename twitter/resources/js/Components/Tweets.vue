@@ -5,11 +5,32 @@ import MessageOutline from 'vue-material-design-icons/MessageOutline.vue'
 import Sync from 'vue-material-design-icons/Sync.vue'
 import { usePage, router } from '@inertiajs/vue3'
 import dayjs from 'dayjs';
+import axios from 'axios';
+
 const page = usePage();
 
 const Mytweets = computed(() => page.props.tweets);
 const GoToUserPage = (username) => {
     router.get(`/users/${username}`);
+}
+
+
+const LikeTheTweet = async (tweet) => {
+    try {
+        const response = await axios.post(`/tweets/${tweet.id}/like`);
+        tweet.isLiked = response.data.isLiked;
+
+        if (tweet.isLiked === true) {
+            tweet.likes_count++;
+        }
+        else {
+            tweet.likes_count--;
+        }
+    } catch (error) {
+        console.log(error)
+
+    }
+
 }
 
 const formatCreatedAt = (date) => {
@@ -87,14 +108,15 @@ const formatCreatedAt = (date) => {
                 <div class="flex justify-center items-center text-sm text-dark">
                     <div class="flex  cursor-pointer">
 
-                        <svg
-                        @click="LikeTheTweet(tweet.id)"
-                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="
-                            w-4 h-5 mt-1 hover:fill-[#FF3E20]  text-red-800 
-                            hover:scale-150
-                            transition-transform
-                            duration-300 ease-in-out
-                            ">
+                        <svg @click="LikeTheTweet(tweet)" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="
+                                    w-4 h-5 mt-1 hover:fill-[#FF3E20]  text-red-800 
+                                    hover:scale-150
+                                    transition-transform
+                                    duration-300 ease-in-out
+                                    "
+                                    :class="{'fill-[#FF3E20]':tweet.isLiked}"
+                                    >
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                         </svg>

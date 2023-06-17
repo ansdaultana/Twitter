@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('tweets', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->text('text');
+            $table->string('image')->nullable();
+            $table->string('video')->nullable();
             $table->timestamps();
+
         });
     }
 

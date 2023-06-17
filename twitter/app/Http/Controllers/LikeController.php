@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Like;
 use App\Http\Requests\StoreLikeRequest;
 use App\Http\Requests\UpdateLikeRequest;
+use App\Models\Tweet;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LikeController extends Controller
 {
@@ -15,6 +17,45 @@ class LikeController extends Controller
     {
         //
     }
+    public function like(Tweet $tweet)
+    {
+        $loggedInUser = auth()->user();
+        try {
+            $checktweet = Tweet::findOrFail($tweet->id);
+        } catch (ModelNotFoundException $e) {
+            abort(404, 'Tweet not found');
+        }
+        $isLiked = $tweet->likes()->where([
+            
+            'likeable_id' => $tweet->id,
+            'likeable_type' => Tweet::class,
+            'user_id'=>$loggedInUser->id,
+            ])->exists();
+
+
+        if ($isLiked) {
+            $tweet->likes()->where([
+                'likeable_id' => $tweet->id,
+                'likeable_type' => Tweet::class,
+                  'user_id'=>$loggedInUser->id,
+
+            ])->delete();
+        } else {
+            $like = new Like([
+                'user_id' => $loggedInUser->id,
+                'likeable_id' => $tweet->id,
+                'likeable_type' => Tweet::class,
+            ]);
+            $like->save();
+        }
+        $isLiked = !$isLiked; // Toggle the like status
+        $response = [
+            'isLiked' => $isLiked,
+        ];
+
+        return response()->json($response);
+    }
+
 
     /**
      * Show the form for creating a new resource.

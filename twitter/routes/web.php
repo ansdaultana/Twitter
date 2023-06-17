@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TweetController;
 use App\Http\Controllers\UserController;
@@ -33,6 +34,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/createtweet', [TweetController::class, 'create'])->name('tweet.create');
     Route::post('/users/{user:username}/follow', [UserController::class, 'follow'])->name('user.follow');
+    Route::post('/tweets/{tweet:id}/like',[LikeController::class,'like']);
 
 });
 

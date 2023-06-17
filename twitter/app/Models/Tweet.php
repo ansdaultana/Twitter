@@ -28,4 +28,8 @@ class Tweet extends Model
     {
         return $this->hasMany(Comment::class);
     }
+    public function scopeFromFollowedUsers($query, $followingIds)
+{
+    return $query->whereIn('user_id', $followingIds);
+}
 }

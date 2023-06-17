@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Follower;
+use App\Models\Like;
 use App\Models\Tweet;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -27,10 +28,19 @@ class UserController extends Controller
     {
         $search = Request::input('search');
         $tweets = Tweet::with('user')
-            ->where('user_id', $user->id)
-            ->latest()
-            ->get();
-
+        ->where('user_id', $user->id)
+        ->withCount('likes')
+        ->withCount('comments')
+        ->addSelect([
+            'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                ->whereColumn('likeable_id', 'tweets.id')
+                ->where('likeable_type', Tweet::class)
+                ->where('user_id', $user->id)
+                ->limit(1)
+        ])
+        ->latest()
+        ->get();
+    
         $followerCount = $user->followers()->count();
         $followingCount = $user->following()->count();
         return Inertia::render('UserShow', [
@@ -56,9 +66,18 @@ class UserController extends Controller
     {
         $search = Request::input('search');
         $tweets = Tweet::with('user')
-            ->where('user_id', $user->id)
-            ->latest()
-            ->get();
+        ->where('user_id', $user->id)
+        ->withCount('likes')
+        ->withCount('comments')
+        ->addSelect([
+            'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                ->whereColumn('likeable_id', 'tweets.id')
+                ->where('likeable_type', Tweet::class)
+                ->where('user_id', $user->id)
+                ->limit(1)
+        ])
+        ->latest()
+        ->get();
         $followerCount = $user->followers()->count();
         $followingCount = $user->following()->count();
 

@@ -34,12 +34,9 @@ let addNewTweet = () => {
 </script>
 
 <template>
-  <div v-if="isTweetSideBtnVisible"
-    class="transition duration-200  transition-scale fixed   md:w-1/2 flex items-center justify-center rounded ">
-
-    <div class="bg-black rounded border border-gray-800 w-screen m-10 bg-opacity-90">
-
-      <button class="cursor-pinter p-2 bg-opacity-90" @click="closemodal">
+  <div v-if="isTweetSideBtnVisible" class="transition duration-200 fixed top-10 left-0 right-0 flex items-center justify-center z-50">
+    <div class="bg-black rounded border border-gray-800 w-96 lg:w-1/2 m-10">
+        <button class="cursor-pinter p-2 " @click="closemodal">
         <Close size=20 fillColor="white" />
       </button>
       <div class="px-5 py-3 border-gray-800 border-b flex  bg-black">
@@ -63,9 +60,6 @@ let addNewTweet = () => {
                 <ImageOutline fillColor="#48C9B0" :size=22 class="cursor-pointer" />
               </label>
               <input type="file" id="fileUpload" class="hidden" @change="get">
-            </div>
-            <div class="hover:bg-gray-800 cursor-pointer p-2 rounded-full">
-              <FileGifBox fillColor="#48C9B0" :size=22 class="cursor-pointer" />
             </div>
             <div class="hover:bg-gray-800 cursor-pointer p-2 rounded-full">
               <Emoticon fillColor="#48C9B0" :size=22 class="cursor-pointer" />

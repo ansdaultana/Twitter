@@ -78,7 +78,7 @@ router.get(`/${username}/follower`);
                     src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
                     alt="Profile Picture" />
 
-                <div v-if="profile === false">
+                <div v-if="profile === false" >
                     <div>
                         <button @click="followOrUnfollow(BeingVieweduser.username)" class="mt-16 mr-4"
                             @mouseenter="isHovered = true" @mouseleave="isHovered = false">
@@ -97,7 +97,7 @@ router.get(`/${username}/follower`);
 
                 </div>
             </div>
-            <div class="flex-col mb-3">
+            <div class="flex-col mb-3 ">
                 <h1 class="text-xl text-white ml-6 font-bold">{{ BeingVieweduser.name }}</h1>
 
                 <div class="flex ml-4">
@@ -109,7 +109,7 @@ router.get(`/${username}/follower`);
                     <h3 class="text-md text-gray-400  ">{{ BeingVieweduser.username }}</h3>
                 </div>
             </div>
-            <div class="flex">
+            <div class="flex border-b-2 pb-8 border-gray-800">
                 <button 
                 @click="ShowFollowing(BeingVieweduser.username)"
                 class="text-gray-400 ml-4">
@@ -125,7 +125,6 @@ router.get(`/${username}/follower`);
         </div>
 
 
-        <TweetModal />
         <Tweets />
     </div>
 </template>

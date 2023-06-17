@@ -2,6 +2,7 @@
 import { ref, provide } from 'vue';
 import Sidebarlayout from "@/Layouts/Sidebarlayout.vue";
 import Rightbarlayout from '@/Layouts/Rightbarlayout.vue';
+import TweetModal from "@/Components/TweetModal.vue";
 
 const tweetsidebtn = ref(false);
 const textarea = ref(null);
@@ -10,10 +11,12 @@ provide('tweetsidebtn', tweetsidebtn);
 </script>
 
 <template>
-    <div class="h-screen flex w-full">
+    <TweetModal />
+
+    <div class="h-screen flex w-full relative " :class="{'blur-xs':tweetsidebtn}">
         <Sidebarlayout />
-       
-        <slot/>
+
+        <slot />
 
         <Rightbarlayout />
     </div>

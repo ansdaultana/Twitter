@@ -70,6 +70,24 @@ class TweetController extends Controller
     }
 
 
+    public function edit(Tweet $tweet)
+    {
+        //
+
+        $attributes=request()->validate([
+            'text'=>'required|min:3',
+        ]);
+
+        if (auth()->check() && $tweet->user->id === auth()->user()->id) {
+
+            $tweet['text']=$attributes['text'];
+           $tweet->save();
+        }
+        else {
+
+            abort(403);
+        }
+    }
     public function store(StoreTweetRequest $request)
     {
         //
@@ -82,10 +100,6 @@ class TweetController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Tweet $tweet)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.

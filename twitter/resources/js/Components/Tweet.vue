@@ -1,11 +1,14 @@
 <script setup>
-import { defineProps, ref, computed } from 'vue';
+import { defineProps, ref, computed ,inject} from 'vue';
 import MessageOutline from 'vue-material-design-icons/MessageOutline.vue'
 import Sync from 'vue-material-design-icons/Sync.vue'
 import { router, usePage } from '@inertiajs/vue3'
-
 import axios from 'axios';
 const page = usePage();
+const blur = ref(inject('blur'));
+const edit = ref(inject('edit'));
+const EditTweet = ref(inject('EditTweet'));
+
 
 const props = defineProps({
     tweet: {
@@ -14,8 +17,6 @@ const props = defineProps({
     },
 });
 const authUser = computed(() => page.props.auth.user );
-console.log(authUser);
-
 const AuthUserOptions = (username) => {
     if (username === authUser.value.username) {
         return true;
@@ -23,8 +24,6 @@ const AuthUserOptions = (username) => {
     return false;
 
 }
-
-
 const ForAnyView = (username) => {
     if (username !== authUser.value.username) {
         return true;
@@ -32,15 +31,13 @@ const ForAnyView = (username) => {
     return false;
 
 }
-
-
 const GoToUserPage = (username) => {
     router.get(`/users/${username}`);
 }
 const Menu = ref(false)
 const openMenu = () => {
 
-   
+   //blur.value=true;
     Menu.value = !Menu.value;
 }
 const LikeTheTweet = async (tweet) => {
@@ -59,6 +56,11 @@ const LikeTheTweet = async (tweet) => {
 
     }
 
+}
+const OpenEditModal = (tweet) => {
+    EditTweet.value=tweet;
+    edit.value=true;
+    openMenu();
 }
 const formatCreatedAt = (date) => {
     const createdDate = new Date(date);
@@ -157,7 +159,7 @@ const formatCreatedAt = (date) => {
                 </div>
             </div>
             <div class="flex justify-end">
-                <div v-if="Menu === true" class="absolute top-12 right-6     mt-[-20px] mr-4 z-10">
+                <div v-if="Menu === true"  class="absolute top-12 right-6     mt-[-20px] mr-4 z-10">
                     <div
                         class="w-60 border-2 bg-black rounded-lg border-gray-400 flex flex-col hover:scale-105 transition-transform ease-in-out">
 
@@ -212,6 +214,7 @@ const formatCreatedAt = (date) => {
 
                         </button>
                         <button
+                        @click="OpenEditModal(props.tweet)"
                         v-if="AuthUserOptions(props.tweet.user.username)"
                         class="text-white px-2 py-3 hover:text-blue hover:bg-gray-800 text-sm border-2 border-gray-600  border-b">
                             <div class="flex">

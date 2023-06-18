@@ -5,15 +5,34 @@ import Rightbarlayout from '@/Layouts/Rightbarlayout.vue';
 import TweetModal from "@/Components/TweetModal.vue";
 
 const tweetsidebtn = ref(false);
+const blur = ref(false);
+const edit=ref(false);
+const EditTweet=ref(null);
+
 const textarea = ref(null);
 
 provide('tweetsidebtn', tweetsidebtn);
+provide('blur', blur);
+provide('edit', edit);
+provide('EditTweet', EditTweet);
+
+
+const blurOn = () => {
+    if (tweetsidebtn) {
+        return true;
+    }
+    if (edit) {
+        return true;
+    }
+    return false;
+}
+
 </script>
 
 <template>
     <TweetModal />
 
-    <div class="h-screen flex w-full relative " :class="{'blur-xs':tweetsidebtn}">
+    <div class="h-screen flex w-full relative " :class="{'blur-xs':tweetsidebtn || edit}">
         <Sidebarlayout />
 
         <slot />

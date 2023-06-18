@@ -41,6 +41,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/deletetweet/{tweet:id}', [TweetController::class, 'delete']);
     Route::get('/{user:username}/tweets/{tweet:id}',[TweetController::class,'show']);
 
+    Route::post('/replytweet/{tweet:id}',[TweetController::class,'addReply']);
+
 
 });
 

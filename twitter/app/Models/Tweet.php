@@ -13,6 +13,7 @@ class Tweet extends Model
     protected $fillable=[
         'user_id',
         'text',
+        'parent_tweet_id',
     ];
     public function user()
     {

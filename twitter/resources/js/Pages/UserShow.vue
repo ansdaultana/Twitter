@@ -15,6 +15,8 @@ defineOptions({
 const isHovered = ref(false);
 const page = usePage();
 const BeingVieweduser = ref(page.props.BeingVieweduser);
+const tweets = ref(page.props.tweets);
+
 const profile = computed(() => page.props.profile);
 
 let followerCount = computed(()=>page.props.followerCount);
@@ -133,9 +135,7 @@ router.get(`/${username}/follower`);
                 </button>
             </div>
         </div>
-
-
-        <Tweets />
+        <Tweets :Mytweets="tweets"/>
     </div>
 </template>
 

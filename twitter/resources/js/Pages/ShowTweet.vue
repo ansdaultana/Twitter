@@ -19,10 +19,9 @@ const page = usePage();
 const auth = ref(page.props.authUser);
 const user = computed(() => page.props.user);
 const tweet = computed(() => page.props.tweet);
+const replies = computed(() => page.props.replies);
 let isLiked = ref(page.props.isLiked);
 let likes_count = ref(page.props.likes_count);
-
-
 const edit = ref(inject('edit'));
 const EditTweet = ref(inject('EditTweet'));
 const AreYouSure = ref(inject('AreYouSure'));
@@ -73,6 +72,21 @@ const LikeTheTweet = async (tweet) => {
         console.log(error);
     }
 
+}
+const OpenEditModal = (tweet) => {
+    EditTweet.value = tweet;
+    edit.value = true;
+    openMenu();
+}
+
+const IsUserSure = (id, method) => {
+    ShowAreYouSure.value = true;
+    openMenu();
+    if (AreYouSure.value) {
+        AreYouSure.value.id = id;
+        AreYouSure.value.method = method;
+
+    }
 }
 
 const formatCreatedAt = (date) => {
@@ -144,7 +158,7 @@ const formatCreatedAt = (date) => {
                     <p class="py-2 text-white">
                         {{ tweet.text }}
                     </p>
-                    <div class="flex items-center justify-between w-full">
+                    <div class="flex items-center justify-between w-full border-t border-gray-700 mt-2 py-1">
                         <div class="flex items-center text-sm text-dark">
                             <div class="flex justify-center items-center cursor-pointer">
 
@@ -286,9 +300,11 @@ const formatCreatedAt = (date) => {
             @click.stop="GoToUserPage(user.username)"
             > @{{ user.username }}</div>
         </div>
-        <TweetCreate heading="Tweet Your Reply" BtnText="Reply" />
+        <TweetCreate heading="Tweet Your Reply" BtnText="Reply" :id="tweet.id" />
 
-        <Tweets />
+
+
+        <Tweets :Mytweets="replies"/>
 
 
     </div>

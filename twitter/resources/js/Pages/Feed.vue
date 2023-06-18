@@ -6,7 +6,7 @@
             <h1 class=" text-xl text-white font-bold">Home</h1>
         </div>
         <TweetCreate  heading="What's Up?" BtnText="Tweet"/>
-        <Tweets />
+        <Tweets :Mytweets="Mytweets"/>
     </div>
 </template>
 
@@ -15,7 +15,13 @@ import TweetCreate from '@/Components/TweetCreate.vue';
 import TweetModal from "@/Components/TweetModal.vue";
 import Tweets from '@/Components/Tweets.vue';
 import TwitterLayout from '@/Layouts/TwitterLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head ,} from '@inertiajs/vue3';
+import {computed} from 'vue';
+import { usePage,  } from '@inertiajs/vue3'
+
+const page = usePage();
+
+const Mytweets = computed(() => page.props.tweets);
 
 defineOptions({
     layout: TwitterLayout,

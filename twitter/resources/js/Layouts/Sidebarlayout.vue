@@ -46,11 +46,11 @@ const VisitProfile = (username) => {
       </button>
       <div name="sidemenubuttons" class="mb-3 lg:ml-3">
         <!-- Sidebar menu items -->
-        <MenuItem iconString="Home" />
+        <MenuItem iconString="Home"  @click="goToHome"/>
         <MenuItem iconString="Explore" />
         <MenuItem iconString="Notifications" />
         <MenuItem iconString="Messages" />
-        <MenuItem iconString="Profile" />
+        <MenuItem iconString="Profile" @click="VisitProfile(user.username)" />
         <button @click="handleClick"
           class="lg:w-40 mt-8 w-30 text-white font-extrabold text-[22px] hover:bg-[#71C9B0] bg-[#48C9B0] ml-1 p-2 px-2 rounded-full cursor-pointer">
           <span class="lg:block hidden">Tweet</span>
@@ -68,7 +68,7 @@ const VisitProfile = (username) => {
         </button>
 
         <button @click="logout" type="submit"
-          class="w-full text-white border-gray-600 text-left hover:bg-gray-900 border-t border-lighter p-3 text-sm focus:outline-none">
+          class="w-full text-white border-gray-600 text-left hover:bg-gray-900 border-t p-3 text-sm focus:outline-none">
           Log out {{ user.name }}
         </button>
       </div>

@@ -31,8 +31,8 @@ class TweetController extends Controller
             ->fromFollowedUsers($followingIds)
             ->withCount(['likes', 'comments'])
             ->addSelect([
-               //counts the number of id values in the likes table and returns 1 if the count is greater than 0,
-               // indicating that there are likes present. Otherwise, it returns 0, indicating no likes.
+                //counts the number of id values in the likes table and returns 1 if the count is greater than 0,
+                // indicating that there are likes present. Otherwise, it returns 0, indicating no likes.
                 'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
                     ->whereColumn('likeable_id', 'tweets.id')
                     ->where('likeable_type', Tweet::class)
@@ -74,19 +74,32 @@ class TweetController extends Controller
     {
         //
 
-        $attributes=request()->validate([
-            'text'=>'required|min:3',
+        $attributes = request()->validate([
+            'text' => 'required|min:3',
         ]);
 
         if (auth()->check() && $tweet->user->id === auth()->user()->id) {
 
-            $tweet['text']=$attributes['text'];
-           $tweet->save();
+            $tweet['text'] = $attributes['text'];
+            $tweet->save();
+        } else {
+
+            abort(403);
+        }
+    }
+    public function delete(Tweet $tweet)
+    {
+
+        if (auth()->check() && auth()->user()->id === $tweet->user->id) {
+
+            $tweet->delete();
+
         }
         else {
 
             abort(403);
         }
+
     }
     public function store(StoreTweetRequest $request)
     {

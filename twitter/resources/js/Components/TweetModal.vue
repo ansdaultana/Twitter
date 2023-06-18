@@ -2,7 +2,6 @@
 import { ref, inject, computed, watch } from 'vue';
 import Close from 'vue-material-design-icons/Close.vue';
 import ImageOutline from 'vue-material-design-icons/ImageOutline.vue';
-import FileGifBox from 'vue-material-design-icons/FileGifBox.vue';
 import Emoticon from 'vue-material-design-icons/Emoticon.vue';
 import { useForm } from '@inertiajs/vue3'
 const edit = ref(inject('edit'));

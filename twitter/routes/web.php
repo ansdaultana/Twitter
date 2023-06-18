@@ -36,6 +36,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/users/{user:username}/follow', [UserController::class, 'follow'])->name('user.follow');
     Route::post('/tweets/{tweet:id}/like',[LikeController::class,'like']);
     Route::post('/edittweet/{tweet:id}', [TweetController::class, 'edit']);
+    Route::post('/deletetweet/{tweet:id}', [TweetController::class, 'delete']);
+
 
 
 });

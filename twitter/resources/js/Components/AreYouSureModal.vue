@@ -11,20 +11,20 @@ const closemodal = () => {
     Show.value = false;
 }
 const DeleteTweet = (id) => {
-router.post(`deletetweet/${id}`);
-closemodal();
+    router.post(`deletetweet/${id}`);
+    closemodal();
 }
 
 const unfollow = async (username) => {
 
-try {
-    await axios.post(`/users/${username}/follow`)
-    router.get('/home');
-closemodal();
+    try {
+        await axios.post(`/users/${username}/follow`)
+        router.get('/home');
+        closemodal();
 
-} catch (error) {
-    console.log(error)
-}
+    } catch (error) {
+        console.log(error)
+    }
 
 }
 </script>
@@ -32,13 +32,12 @@ closemodal();
 <template>
     <div v-if="Show"
         class=" fixed top-40  left-0 right-0  flex items-center justify-center z-50  hover:scale-105 ease-in duration-300">
-        <div class="bg-black rounded border border-gray-800 w-96 lg:96 m-10">
+        <div class="bg-black border border-gray-800 rounded-lg w-96 lg:96 m-10">
             <button class="cursor-pinter p-2 " @click="closemodal">
                 <Close size=20 fillColor="white" />
             </button>
             <div class="px-5 py-3 border-gray-800 border-b flex  bg-black ">
-
-                <form class="w-full px-4 relative mb-5 mt-5">
+                <form class="w-full px-4 relative mb-5 ">
                     <div class="flex justify-evenly">
                         <button @click="closemodal"
                             class="text-white px-2 py-3 w-28  hover:text-blue hover:bg-gray-800 text-sm border-2 border-gray-600  border-b">
@@ -57,9 +56,7 @@ closemodal();
 
                         </button>
 
-                        <button
-                         v-if="AreYouSure.method === 'deleteTweet'"
-                         @click.prevent="DeleteTweet(AreYouSure.id)"
+                        <button v-if="AreYouSure.method === 'deleteTweet'" @click.prevent="DeleteTweet(AreYouSure.id)"
                             class="text-white px-2 py-3 w-28 hover:text-red-900 hover:bg-red-300 text-sm border-2 border-gray-600  border-b">
                             <div class="flex">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -74,22 +71,20 @@ closemodal();
 
                         </button>
 
-                        <button
-                        v-if="AreYouSure.method === 'unfollow'"
-                        @click.prevent="unfollow(AreYouSure.id)"
-                           class="text-white px-2 py-3 w-28 hover:text-red-900 hover:bg-red-300 text-sm border-2 border-gray-600  border-b">
-                           <div class="flex">
-                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                   stroke="currentColor" class="w-5 h-5 mr-2">
-                                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                               </svg>
+                        <button v-if="AreYouSure.method === 'unfollow'" @click.prevent="unfollow(AreYouSure.id)"
+                            class="text-white px-2 py-3 w-28 hover:text-red-900 hover:bg-red-300 text-sm border-2 border-gray-600  border-b">
+                            <div class="flex">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                    stroke="currentColor" class="w-5 h-5 mr-2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
 
-                               <div>
-                                  Unfollow
-                               </div>
-                           </div>
+                                <div>
+                                    Unfollow
+                                </div>
+                            </div>
 
-                       </button>
+                        </button>
 
                     </div>
 

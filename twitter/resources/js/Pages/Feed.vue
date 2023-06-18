@@ -5,7 +5,7 @@
         <div name="header" class="px-5  py-3 border-gray-800 border-b flex items-center justify-between ">
             <h1 class=" text-xl text-white font-bold">Home</h1>
         </div>
-        <TweetCreate />
+        <TweetCreate  heading="What's Up?" BtnText="Tweet"/>
         <Tweets />
     </div>
 </template>

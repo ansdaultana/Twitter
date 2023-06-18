@@ -5,11 +5,11 @@ import Sync from 'vue-material-design-icons/Sync.vue'
 import { router, usePage } from '@inertiajs/vue3'
 import axios from 'axios';
 const page = usePage();
-const blur = ref(inject('blur'));
 const edit = ref(inject('edit'));
 const EditTweet = ref(inject('EditTweet'));
 const AreYouSure = ref(inject('AreYouSure'));
 const ShowAreYouSure = ref(inject('ShowAreYouSure'));
+const Menu = ref(false)
 
 
 
@@ -44,7 +44,6 @@ const GoToUserPage = (username) => {
     }
 
 }
-const Menu = ref(false)
 const openMenu = () => {
 
     //blur.value=true;
@@ -125,9 +124,7 @@ const formatCreatedAt = (date) => {
                     <p class="font-semibold text-white"> {{ props.tweet.user.name }} </p>
                     <p class="text-sm text-dark ml-2"> @{{ props.tweet.user.username }} </p>
                     <div class="hidden lg:block text-sm text-dark ml-2">&bull;</div>
-
                     <p class="  hidden lg:block text-sm text-dark ml-1"> {{ formatCreatedAt(props.tweet.created_at) }} </p>
-
                 </div>
 
                 <div class="flex">

@@ -1,8 +1,10 @@
 <script setup>
 import Tweets from '@/Components/Tweets.vue';
+import TweetCreate from '@/Components/TweetCreate.vue';
+
 import MessageOutline from 'vue-material-design-icons/MessageOutline.vue'
 import Sync from 'vue-material-design-icons/Sync.vue'
-import { computed } from "vue";
+import { computed, inject } from "vue";
 import { usePage, router } from '@inertiajs/vue3';
 import TwitterLayout from '@/Layouts/TwitterLayout.vue';
 import TweetModal from "@/Components/TweetModal.vue";
@@ -16,18 +18,52 @@ defineOptions({
 const page = usePage();
 const auth = ref(page.props.authUser);
 const user = computed(() => page.props.user);
-
 const tweet = computed(() => page.props.tweet);
 let isLiked = ref(page.props.isLiked);
 let likes_count = ref(page.props.likes_count);
+
+
+const edit = ref(inject('edit'));
+const EditTweet = ref(inject('EditTweet'));
+const AreYouSure = ref(inject('AreYouSure'));
+const ShowAreYouSure = ref(inject('ShowAreYouSure'));
+const Menu = ref(false)
 const back = () => {
     router.get("/home");
+}
+const AuthUserOptions = (username) => {
+    if (username === auth.value.username) {
+        return true;
+    }
+    return false;
+
+}
+const ForAnyView = (username) => {
+    if (username !== auth.value.username) {
+        return true;
+    }
+    return false;
+
+}
+const GoToUserPage = (username) => {
+    if (username === auth.value.username) {
+        router.get(`/${username}`);
+    }
+    else {
+        router.get(`/users/${username}`);
+
+    }
+
+}
+const openMenu = () => {
+
+    //blur.value=true;
+    Menu.value = !Menu.value;
 }
 const LikeTheTweet = async (tweet) => {
     try {
         const response = await axios.post(`/tweets/${tweet.id}/like`);
         isLiked.value = response.data.isLiked;
-        console.log(isLiked.value===response.data.isLiked);
         if (isLiked.value === true) {
             likes_count.value++;
         } else {
@@ -61,7 +97,6 @@ const formatCreatedAt = (date) => {
 </script>
 <template>
     <Head title='Twitter' />
-
     <div class="w-full md:w-1/2 h-full overflow-y-scroll scrollbar-hide">
         <div class="flex-col">
             <div class="px-5 py-2 border-gray-900 border-b flex justify-between">
@@ -130,11 +165,11 @@ const formatCreatedAt = (date) => {
 
                                 <svg @click.stop="LikeTheTweet(tweet)" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                     stroke="currentColor" class="
-                                                w-4 h-5 mt-1 hover:fill-[#FF3E20]  text-red-800 
-                                                hover:scale-150
-                                                transition-transform
-                                                duration-300 ease-in-out
-                                                " :class="{ 'fill-[#FF3E20]': isLiked}">
+                                                    w-4 h-5 mt-1 hover:fill-[#FF3E20]  text-red-800 
+                                                    hover:scale-150
+                                                    transition-transform
+                                                    duration-300 ease-in-out
+                                                    " :class="{ 'fill-[#FF3E20]': isLiked }">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                                 </svg>
@@ -146,13 +181,116 @@ const formatCreatedAt = (date) => {
                         <div class="flex items-center text-sm text-dark">
                             <i class="fas fa-share-square mr-3"></i>
                         </div>
-                    </div>
+                        <div v-if="Menu === true" class="flex justify-end">
+                            <div class="absolute top-12 right-6     mt-[-20px] mr-4 z-10">
+                                <div
+                                    class="w-60 border-2 bg-black rounded-lg border-gray-400 flex flex-col hover:scale-105 transition-transform ease-in-out">
 
+                                    <button v-if="ForAnyView(user.username)"
+                                        @click.stop="IsUserSure(user.username, 'unfollow')"
+                                        class="text-white px-2 py-3 hover:bg-gray-800 hover:text-blue text-sm border-2 border-gray-600  border-b">
+                                        <div class="flex">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2    ">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M22 10.5h-6m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+                                            </svg>
+                                            <div>
+                                                Unfollow @{{ user.username }}
+
+                                            </div>
+                                        </div>
+
+                                    </button>
+                                    <button v-if="ForAnyView(user.username)" @click.stop=""
+                                        class="text-white px-2 py-3 hover:bg-gray-800 text-sm border-2 border-gray-600  border-b">
+                                        <div class="flex">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5" />
+                                            </svg>
+
+                                            <div>
+                                                Mark as Spam
+
+                                            </div>
+                                        </div>
+
+                                    </button>
+
+                                    <button @click.stop="" v-if="ForAnyView(user.username)"
+                                        class="text-white px-2 py-3 hover:text-red-900 hover:bg-red-300  text-sm border-2 border-gray-600  border-b">
+                                        <div class="flex">
+                                            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                                class="w-5 h-5 mr-2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                            </svg>
+
+
+                                            <div>
+                                                Block
+
+                                            </div>
+                                        </div>
+
+                                    </button>
+                                    <button @click.stop="OpenEditModal(tweet)" v-if="AuthUserOptions(user.username)"
+                                        class="text-white px-2 py-3 hover:text-blue hover:bg-gray-800 text-sm border-2 border-gray-600  border-b">
+                                        <div class="flex">
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                            </svg>
+
+                                            <div>
+                                                Edit
+
+                                            </div>
+                                        </div>
+
+                                    </button>
+
+                                    <button v-if="AuthUserOptions(user.username)"
+                                        @click.stop="IsUserSure(tweet.id, 'deleteTweet')"
+                                        class="text-white px-2 py-3 hover:text-red-900 hover:bg-red-300 text-sm border-2 border-gray-600  border-b">
+                                        <div class="flex">
+
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+
+                                            <div>
+                                                Delete
+                                            </div>
+                                        </div>
+
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="flex mt-7 ml-24">
+            <div class="text-gray-400 ">Replying to</div>
+            <div class="text-blue ml-3 cursor-pointer" 
+            @click.stop="GoToUserPage(user.username)"
+            > @{{ user.username }}</div>
+        </div>
+        <TweetCreate heading="Tweet Your Reply" BtnText="Reply" />
 
         <Tweets />
+
+
     </div>
 </template>
 

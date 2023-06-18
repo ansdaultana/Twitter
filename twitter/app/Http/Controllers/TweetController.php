@@ -132,7 +132,7 @@ class TweetController extends Controller
                     : [],
                 'replies' => $replies,
                 'authUser' => $loggedInUser,
-                'isLiked' => $user->likes->where('tweet_id', $tweet->id)->count() > 0?true:false,
+                'isLiked' => $loggedInUser->likes->where('tweet_id', $tweet->id)->count() > 0,
             ]
         );
         

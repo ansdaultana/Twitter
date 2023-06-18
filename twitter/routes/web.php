@@ -34,10 +34,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/createtweet', [TweetController::class, 'create'])->name('tweet.create');
     Route::post('/users/{user:username}/follow', [UserController::class, 'follow'])->name('user.follow');
-    Route::post('/tweets/{tweet:id}/like',[LikeController::class,'like']);
+    Route::post('/tweets/{tweet:id}/like', [LikeController::class, 'like']);
     Route::post('/edittweet/{tweet:id}', [TweetController::class, 'edit']);
     Route::post('/deletetweet/{tweet:id}', [TweetController::class, 'delete']);
-
+    Route::get('/{user:username}/tweets/{tweet:id}',[TweetController::class,'show']);
 
 
 });

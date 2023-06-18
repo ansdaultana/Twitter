@@ -53,7 +53,10 @@ let friends = [
         <input v-model="searchValue" class=" pl-12  rounded-full w-80 p-2 text-white bg-[#181818] text-sm"
             placeholder="Search Twitter" />
         <div v-if="searchValue !== ''" name="search"
-            class="max-h-96 overflow-y-auto  w-80 rounded-lg bg-[#181818] border-l border-r border-b mb-2 border-gray-800 overflow-y-scroll scrollbar-hide ring-[#48C9B0] ring-opacity-50">
+            class="
+            ring-2 
+            ring-offset-gray-400
+            max-h-96 w-80 rounded-lg bg-[#181818] border-l border-r border-b mb-2  overflow-y-scroll scrollbar-hide ">
 
             <div class=" p-3">
                 <p class="text-lg font-bold text-[#48C9B0]">Results</p>
@@ -79,7 +82,8 @@ let friends = [
             </button>
 
         </div>
-        <div v-if="searchValue === ''" name="tags" class="w-80 rounded-lg border mt-4 border-gray-800 bg-[#181818]">
+        <div v-if="searchValue === ''" name="tags" class="
+        w-80 rounded-lg border mt-4 border-gray-800 bg-[#181818]">
             <div class="flex items-center justify-between p-3">
                 <p class="text-lg text-[#48C9B0] font-bold">Trends for You</p>
                 <i class="fas fa-cog text-lg text-blue"></i>

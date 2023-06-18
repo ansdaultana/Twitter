@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Tweet;
 use App\Http\Requests\StoreTweetRequest;
@@ -95,8 +96,7 @@ class TweetController extends Controller
 
             $tweet->delete();
 
-        }
-        else {
+        } else {
 
             abort(403);
         }
@@ -106,9 +106,38 @@ class TweetController extends Controller
     {
         //
     }
-    public function show(Tweet $tweet)
+    public function show(User $user, Tweet $tweet)
     {
-        //
+        $loggedInUser = auth()->user();
+        $search = Request::input('search');
+       
+        $Comments = Comment::with(['user', 'likes'])
+            ->withCount(['likes'])
+            ->addSelect([
+                'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                    ->whereColumn('likeable_id', 'comments.id')
+                    ->where('likeable_type', Comment::class)
+                    ->where('user_id', $loggedInUser->id),
+            ])
+            ->latest()
+            ->get();
+        return Inertia::render(
+            'ShowTweet',
+            [
+                'tweet' => $tweet,
+                'users' => $search ? User::query()
+                ->where(function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('username', 'like', '%' . $search . '%');
+                })
+                ->where('id', '!=', auth()->user()->id)
+                ->limit(20)
+                ->get() : [],
+                'comments'=>$Comments,
+                'authUser'=>$loggedInUser
+            ]
+        );
+
     }
 
     /**

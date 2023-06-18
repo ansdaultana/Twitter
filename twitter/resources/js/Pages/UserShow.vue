@@ -14,11 +14,11 @@ defineOptions({
 const isHovered = ref(false);
 const page = usePage();
 const BeingVieweduser = ref(page.props.BeingVieweduser);
-const users = computed(() => page.props.users);
 const profile = computed(() => page.props.profile);
 
-const followerCount =computed(()=>page.props.followerCount);
-const followingCount =computed(()=>page.props.followingCount);
+let followerCount = computed(()=>page.props.followerCount);
+let followingCount =computed(()=>page.props.followingCount);
+const tweetCount = computed(()=>page.props.tweets.length);
 
 const isFollowing = ref(page.props.auth_is_following_opened_user);
 
@@ -32,6 +32,13 @@ const followOrUnfollow = async (username) => {
     try {
         const response = await axios.post(`/users/${username}/follow`)
         isFollowing.value = response.data.isFollowing;
+  
+        if (isFollowing.value===true) {
+            followerCount.value++; 
+        } else {
+            followerCount.value--; 
+            
+        }
     } catch (error) {
         console.log(error)
     }
@@ -64,7 +71,7 @@ router.get(`/${username}/follower`);
                     </button>
                     <div>
                         <h1 class="text-xl text-white ml-3 font-bold">{{ BeingVieweduser.name }}</h1>
-                        <h3 class="text-md text-gray-400 ml-3 ">1.1k tweets</h3>
+                        <h3 class="text-md text-gray-400 ml-3 ">{{tweetCount}} tweets</h3>
 
                     </div>
                 </div>
@@ -112,13 +119,13 @@ router.get(`/${username}/follower`);
             <div class="flex border-b-2 pb-8 border-gray-800">
                 <button 
                 @click="ShowFollowing(BeingVieweduser.username)"
-                class="text-gray-400 ml-4">
+                class="text-gray-400 ml-4 hover:text-white transition-transform hover:scale-105 ease-in-out ">
                    {{ followingCount }} following
                 </button>
                 <button 
                 @click="ShowFollower(BeingVieweduser.username)"
                 
-                class="text-gray-400 ml-4">
+                class="text-gray-400 ml-4 hover:text-white transition-transform hover:scale-105 ease-in-out  ">
                     {{ followerCount }}  followers
                 </button>
             </div>

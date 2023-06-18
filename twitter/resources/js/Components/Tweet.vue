@@ -82,6 +82,10 @@ const IsUserSure = (id, method) => {
 
     }
 }
+
+const GoToTweet = (username, id) => {
+    router.get(`/${username}/tweets/${id}`);
+}
 const formatCreatedAt = (date) => {
     const createdDate = new Date(date);
     const currentDate = new Date();
@@ -107,9 +111,9 @@ const formatCreatedAt = (date) => {
 
 <template>
     <div class="w-full p-4 border-b border-gray-800 hover:bg-[#181818] flex cursor-pointer transition duration-200 ease-in-out"
-        :class="{ 'hover:bg-black': Menu }">
+        :class="{ 'hover:bg-black': Menu }" @click="GoToTweet(props.tweet.user.username, props.tweet.id)">
         <div class="flex-none mr-4">
-            <div class="flex items-center" @click="GoToUserPage(props.tweet.user.username)">
+            <div class="flex items-center" @click.stop="GoToUserPage(props.tweet.user.username)">
 
                 <img src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
                     class="h-12 w-12 rounded-full flex-none" />
@@ -117,7 +121,7 @@ const formatCreatedAt = (date) => {
         </div>
         <div class="w-full relative">
             <div class="flex items-center justify-between w-full">
-                <div class="flex items-center" @click="GoToUserPage(props.tweet.user.username)">
+                <div class="flex items-center" @click.stop="GoToUserPage(props.tweet.user.username)">
                     <p class="font-semibold text-white"> {{ props.tweet.user.name }} </p>
                     <p class="text-sm text-dark ml-2"> @{{ props.tweet.user.username }} </p>
                     <div class="hidden lg:block text-sm text-dark ml-2">&bull;</div>
@@ -128,7 +132,7 @@ const formatCreatedAt = (date) => {
 
                 <div class="flex">
 
-                    <button @click="openMenu" class="p-1 m-2 h-8 rounded-full hover:bg-zinc">
+                    <button @click.stop="openMenu" class="p-1 m-2 h-8 rounded-full hover:bg-zinc">
                         <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                             class="w-6 text-white h-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -159,13 +163,13 @@ const formatCreatedAt = (date) => {
                 <div class="flex justify-center items-center text-sm text-dark">
                     <div class="flex  cursor-pointer">
 
-                        <svg @click="LikeTheTweet(props.tweet)" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        <svg @click.stop="LikeTheTweet(props.tweet)" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="
-                                    w-4 h-5 mt-1 hover:fill-[#FF3E20]  text-red-800 
-                                    hover:scale-150
-                                    transition-transform
-                                    duration-300 ease-in-out
-                                    " :class="{ 'fill-[#FF3E20]': props.tweet.isLiked }">
+                                        w-4 h-5 mt-1 hover:fill-[#FF3E20]  text-red-800 
+                                        hover:scale-150
+                                        transition-transform
+                                        duration-300 ease-in-out
+                                        " :class="{ 'fill-[#FF3E20]': props.tweet.isLiked }">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                         </svg>
@@ -184,8 +188,7 @@ const formatCreatedAt = (date) => {
                         class="w-60 border-2 bg-black rounded-lg border-gray-400 flex flex-col hover:scale-105 transition-transform ease-in-out">
 
                         <button v-if="ForAnyView(props.tweet.user.username)"
-                        @click="IsUserSure(props.tweet.user.username, 'unfollow')"
-
+                            @click.stop="IsUserSure(props.tweet.user.username, 'unfollow')"
                             class="text-white px-2 py-3 hover:bg-gray-800 hover:text-blue text-sm border-2 border-gray-600  border-b">
                             <div class="flex">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -200,8 +203,11 @@ const formatCreatedAt = (date) => {
                             </div>
 
                         </button>
-                        <button v-if="ForAnyView(props.tweet.user.username)"
-                            class="text-white px-2 py-3 hover:bg-gray-800 text-sm border-2 border-gray-600  border-b">
+                        <button 
+                        v-if="ForAnyView(props.tweet.user.username)"
+                        @click.stop=""
+                        
+                        class="text-white px-2 py-3 hover:bg-gray-800 text-sm border-2 border-gray-600  border-b">
                             <div class="flex">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                     stroke="currentColor" class="w-5 h-5 mr-2">
@@ -217,7 +223,9 @@ const formatCreatedAt = (date) => {
 
                         </button>
 
-                        <button v-if="ForAnyView(props.tweet.user.username)"
+                        <button 
+                        @click.stop=""
+                        v-if="ForAnyView(props.tweet.user.username)"
                             class="text-white px-2 py-3 hover:text-red-900 hover:bg-red-300  text-sm border-2 border-gray-600  border-b">
                             <div class="flex">
                                 <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -234,7 +242,7 @@ const formatCreatedAt = (date) => {
                             </div>
 
                         </button>
-                        <button @click="OpenEditModal(props.tweet)" v-if="AuthUserOptions(props.tweet.user.username)"
+                        <button @click.stop="OpenEditModal(props.tweet)" v-if="AuthUserOptions(props.tweet.user.username)"
                             class="text-white px-2 py-3 hover:text-blue hover:bg-gray-800 text-sm border-2 border-gray-600  border-b">
                             <div class="flex">
 
@@ -253,7 +261,7 @@ const formatCreatedAt = (date) => {
                         </button>
 
                         <button v-if="AuthUserOptions(props.tweet.user.username)"
-                            @click="IsUserSure(props.tweet.id, 'deleteTweet')"
+                            @click.stop="IsUserSure(props.tweet.id, 'deleteTweet')"
                             class="text-white px-2 py-3 hover:text-red-900 hover:bg-red-300 text-sm border-2 border-gray-600  border-b">
                             <div class="flex">
 

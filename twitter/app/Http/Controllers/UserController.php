@@ -12,6 +12,14 @@ use Illuminate\Support\Facades\Request;
 
 class UserController extends Controller
 {
+    public function get()
+    {
+        return Inertia::render('Login');
+    }
+    public function new()
+    {
+        return Inertia::render('Register');
+    }
     //
     public function isFollowing($username)
     {
@@ -30,11 +38,10 @@ class UserController extends Controller
         $tweets = Tweet::with('user')
             ->where('user_id', $user->id)
             ->withCount('likes')
-            ->withCount('comments')
+            ->withCount('replies')
             ->addSelect([
                 'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
-                    ->whereColumn('likeable_id', 'tweets.id')
-                    ->where('likeable_type', Tweet::class)
+                    ->whereColumn('tweet_id', 'tweets.id')
                     ->where('user_id', $user->id)
                     ->limit(1)
             ])
@@ -68,11 +75,10 @@ class UserController extends Controller
         $tweets = Tweet::with('user')
             ->where('user_id', $user->id)
             ->withCount('likes')
-            ->withCount('comments')
+            ->withCount('replies')
             ->addSelect([
                 'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
-                    ->whereColumn('likeable_id', 'tweets.id')
-                    ->where('likeable_type', Tweet::class)
+                    ->whereColumn('tweet_id', 'tweets.id')
                     ->where('user_id', $user->id)
                     ->limit(1)
             ])

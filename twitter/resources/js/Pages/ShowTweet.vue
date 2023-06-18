@@ -7,6 +7,7 @@ import TwitterLayout from '@/Layouts/TwitterLayout.vue';
 import TweetModal from "@/Components/TweetModal.vue";
 import axios from 'axios';
 import { ref } from 'vue'
+import { Head } from '@inertiajs/vue3';
 
 defineOptions({
     layout: TwitterLayout,
@@ -23,6 +24,8 @@ const back = () => {
 
 </script>
 <template>
+    <Head title="Tweet" />
+
     <div class="w-full md:w-1/2 h-full overflow-y-scroll scrollbar-hide">
         <div class="flex-col">
             <div class="px-5 py-2 border-gray-900 border-b flex justify-between">
@@ -54,13 +57,9 @@ const back = () => {
                         <p class="font-semibold text-white"> {{ tweet.user.name }} </p>
                         <p class="text-sm text-dark ml-2"> @{{ tweet.user.username }} </p>
                         <div class="hidden lg:block text-sm text-dark ml-2">&bull;</div>
-    
                         <p class="  hidden lg:block text-sm text-dark ml-1"> {{ formatCreatedAt(tweet.created_at) }} </p>
-    
                     </div>
-    
                     <div class="flex">
-    
                         <button @click.stop="openMenu" class="p-1 m-2 h-8 rounded-full hover:bg-zinc">
                             <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                 class="w-6 text-white h-6">

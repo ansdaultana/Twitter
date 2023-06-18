@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('tweets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('parent_tweet_id')->nullable()->constrained('tweets')->onDelete('cascade');
+
             $table->text('text');
             $table->string('image')->nullable();
             $table->string('video')->nullable();
             $table->timestamps();
-
         });
     }
 

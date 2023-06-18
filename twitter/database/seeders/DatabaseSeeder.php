@@ -17,13 +17,16 @@ class DatabaseSeeder extends Seeder
 
 
         $admin = User::factory()->create(['name' => 'Ans Daultana', 'username' => 'ansdaultana', 'email' => 'ansdaultana.ad5@gmail.com', 'password' => '12121212']);
+        $elon = User::factory()->create(['name' => 'Elon Musk', 'username' => 'elonmusk', 'email' => 'elonmusk@twitter.com', 'password' => '12121212']);
+       
         // User::factory(9)->create();
 
         Tweet::factory()
             ->count(5)
-            ->withCommentsAndLikes()
             ->create(['user_id' => $admin->id]);
-
+            Tweet::factory()
+            ->count(5)
+            ->create(['user_id' => $elon->id]);
 
         // $users->each(function ($user) {
         //     Tweet::factory()

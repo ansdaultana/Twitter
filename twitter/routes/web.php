@@ -20,7 +20,9 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', [TweetController::class, 'new']);
+Route::get('/', [UserController::class, 'get']);
+Route::get('/register', [UserController::class, 'new']);
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/home', [TweetController::class, 'index']);

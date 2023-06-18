@@ -48,19 +48,16 @@ class User extends Authenticatable
     {
         return $this->email==="ansdaultana.ad5@gmail.com";
     }
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
+  
     public function tweets()
     {
         return $this->hasMany(Tweet::class);
     }
     public function likes()
     {
-        return $this->morphMany(Like::class, 'likeable');
+        return $this->hasMany(Like::class);
     }
-
+    
     public function followers()
     {
         return $this->belongsToMany(User::class, 'followers', 'user_id', 'follower_id');
@@ -71,7 +68,6 @@ class User extends Authenticatable
     }
     public function isFollowing($username)
     {
-       
         $AmIFollowingThisUser = User::where('username', $username)->first();
     
         if ($AmIFollowingThisUser && $this->followings()->where('user_id', $AmIFollowingThisUser->id)->exists()) {

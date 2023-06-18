@@ -21,14 +21,19 @@ class Tweet extends Model
     }
     public function likes()
     {
-        return $this->morphMany(Like::class, 'likeable');
+        return $this->hasMany(Like::class);
+    }
+    
+    public function parentTweet()
+    {
+        return $this->belongsTo(Tweet::class, 'parent_tweet_id');
     }
 
-    public function comments()
+    public function replies()
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Tweet::class, 'parent_tweet_id');
     }
-    public function scopeFromFollowedUsers($query, $followingIds)
+        public function scopeFromFollowedUsers($query, $followingIds)
 {
     return $query->whereIn('user_id', $followingIds);
 }

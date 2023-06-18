@@ -27,30 +27,6 @@ class TweetFactory extends Factory
         ];
     }
  
-    public function withCommentsAndLikes() 
-    {
-        return $this->afterCreating(function (Tweet $tweet) {
-            $comments = Comment::factory()
-                ->count(5)
-                ->create([
-                    'tweet_id' => $tweet->id,
-                ]);
-            foreach ($comments as $comment) {
-                Like::factory()
-                    ->count(random_int(3, 100))
-                    ->create([
-                        'likeable_id' => $comment->id,
-                        'likeable_type' => Comment::class,
-                    ]);
-            }
-
-            Like::factory()
-                ->count(random_int(3, 100))
-                ->create([
-                    'likeable_id' => $tweet->id,
-                    'likeable_type' => Tweet::class,
-                ]);
-        });
-    }
+    
     
 }

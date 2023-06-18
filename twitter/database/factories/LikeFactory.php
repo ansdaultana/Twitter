@@ -21,8 +21,6 @@ class LikeFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'likeable_id' => Comment::factory(),
-            'likeable_type' => Comment::class,
         ];
     }
 }

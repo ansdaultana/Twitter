@@ -7,6 +7,7 @@ import TwitterLayout from '@/Layouts/TwitterLayout.vue';
 import TweetModal from "@/Components/TweetModal.vue";
 import axios from 'axios';
 import { ref } from 'vue'
+import { Head } from '@inertiajs/vue3';
 
 defineOptions({
     layout: TwitterLayout,
@@ -57,6 +58,8 @@ router.get(`/${username}/follower`);
 
 </script>
 <template>
+    <Head title="User" />
+
     <div class="w-full md:w-1/2 h-full overflow-y-scroll scrollbar-hide">
         <div class="flex-col">
             <div class="px-5 py-2 border-gray-900 border-b flex justify-between">

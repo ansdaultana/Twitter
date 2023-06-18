@@ -20,42 +20,40 @@ class LikeController extends Controller
     public function like(Tweet $tweet)
     {
         $loggedInUser = auth()->user();
+    
         try {
-            $checktweet = Tweet::findOrFail($tweet->id);
+            $checkTweet = Tweet::findOrFail($tweet->id);
         } catch (ModelNotFoundException $e) {
             abort(404, 'Tweet not found');
         }
+    
         $isLiked = $tweet->likes()->where([
-            
-            'likeable_id' => $tweet->id,
-            'likeable_type' => Tweet::class,
-            'user_id'=>$loggedInUser->id,
-            ])->exists();
-
-
+            'tweet_id' => $tweet->id,
+            'user_id' => $loggedInUser->id,
+        ])->exists();
+    
         if ($isLiked) {
             $tweet->likes()->where([
-                'likeable_id' => $tweet->id,
-                'likeable_type' => Tweet::class,
-                  'user_id'=>$loggedInUser->id,
-
+                'tweet_id' => $tweet->id,
+                'user_id' => $loggedInUser->id,
             ])->delete();
         } else {
             $like = new Like([
                 'user_id' => $loggedInUser->id,
-                'likeable_id' => $tweet->id,
-                'likeable_type' => Tweet::class,
+                'tweet_id' => $tweet->id,
             ]);
             $like->save();
         }
-        $isLiked = !$isLiked; // Toggle the like status
+    
+        $isLiked = !$isLiked;
+    
         $response = [
             'isLiked' => $isLiked,
         ];
-
+    
         return response()->json($response);
     }
-
+    
 
     /**
      * Show the form for creating a new resource.

@@ -100,10 +100,7 @@ class TweetController extends Controller
     }
     public function show(User $user, Tweet $tweet)
     {
-        $loggedInUser = auth()->user();
-        $search = Request::input('search');
-
-        $replies = null;
+       
         //  Comment::with(['user', 'likes'])
         //     ->withCount(['likes'])
         //     ->addSelect([
@@ -113,22 +110,32 @@ class TweetController extends Controller
         //     ])
         //     ->latest()
         //     ->get();
+        $loggedInUser = auth()->user();
+        $search = Request::input('search');
+        $replies = null;
+
         return Inertia::render(
             'ShowTweet',
             [
                 'tweet' => $tweet,
-                'users' => $search ? User::query()
-                    ->where(function ($query) use ($search) {
-                        $query->where('name', 'like', '%' . $search . '%')
-                            ->orWhere('username', 'like', '%' . $search . '%');
-                    })
-                    ->where('id', '!=', auth()->user()->id)
-                    ->limit(20)
-                    ->get() : [],
+                'user' => $user,
+                'likes_count' => $tweet->likes()->count(),
+                'users' => $search
+                    ? User::query()
+                        ->where(function ($query) use ($search) {
+                            $query->where('name', 'like', '%' . $search . '%')
+                                ->orWhere('username', 'like', '%' . $search . '%');
+                        })
+                        ->where('id', '!=', auth()->user()->id)
+                        ->limit(20)
+                        ->get()
+                    : [],
                 'replies' => $replies,
-                'authUser' => $loggedInUser
+                'authUser' => $loggedInUser,
+                'isLiked' => $user->likes->where('tweet_id', $tweet->id)->count() > 0?true:false,
             ]
         );
+        
 
     }
 

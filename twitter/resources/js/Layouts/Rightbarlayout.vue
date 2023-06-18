@@ -2,14 +2,11 @@
 
 import { router, usePage } from '@inertiajs/vue3';
 import { ref, watch, computed, watchEffect } from 'vue';
-
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted, } from 'vue';
 const page = usePage();
 const users = computed(() => page.props.users);
 let currentPath = ref(window.location.pathname);
 let searchValue = ref('');
-
-
 const checkWindowLocation = () => {
     //if new location is /users/username and old loc is '/' then currentpath.val will be /users/username
 
@@ -17,7 +14,6 @@ const checkWindowLocation = () => {
     if (newLocation !== currentPath.value) {
         currentPath.value = newLocation;
         searchValue.value = '';
-
     }
 };
 onMounted(() => {
@@ -109,7 +105,7 @@ let friends = [
             <button v-for="friend in friends"
                 class="cursor-pointer transition duration-200 ease-in-out w-full flex hover:bg-[#2F2F2F]   p-3 ">
                 <img :src="`${friend.src}`" class="w-12 h-12 rounded-full border border-lighter" />
-                <div class="hidden lg:block ml-4">
+                <div class=" ml-4">
                     <p class="text-sm font-bold leading-tight text-white"> {{ friend.name }} </p>
                     <p class="text-sm leading-tight text-gray-500"> {{ friend.handle }} </p>
                 </div>
@@ -127,21 +123,15 @@ let friends = [
 body {
     background-color: black;
 }
-
 /* Hide the scroll bar */
 .scrollbar-hide::-webkit-scrollbar {
     width: 0.4em;
     background-color: transparent;
 }
-
-
-
-
 /* Optional: Add a custom color for the thumb */
 .scrollbar-hide::-webkit-scrollbar-thumb {
     background-color: #888;
 }
-
 /* Optional: Add hover styles for the thumb */
 .scrollbar-hide::-webkit-scrollbar-thumb:hover {
     background-color: #555;

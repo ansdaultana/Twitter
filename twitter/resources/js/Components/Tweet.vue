@@ -35,7 +35,14 @@ const ForAnyView = (username) => {
 
 }
 const GoToUserPage = (username) => {
-    router.get(`/users/${username}`);
+    if (username === authUser.value.username) {
+        router.get(`/${username}`);
+    }
+    else {
+        router.get(`/users/${username}`);
+
+    }
+
 }
 const Menu = ref(false)
 const openMenu = () => {
@@ -66,12 +73,12 @@ const OpenEditModal = (tweet) => {
     openMenu();
 }
 
-const IsUserSure = (tweet,method) => {
+const IsUserSure = (id, method) => {
     ShowAreYouSure.value = true;
     openMenu();
     if (AreYouSure.value) {
-    AreYouSure.value.id = tweet.id;
-    AreYouSure.value.method =method;
+        AreYouSure.value.id = id;
+        AreYouSure.value.method = method;
 
     }
 }
@@ -154,11 +161,11 @@ const formatCreatedAt = (date) => {
 
                         <svg @click="LikeTheTweet(props.tweet)" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="
-                            w-4 h-5 mt-1 hover:fill-[#FF3E20]  text-red-800 
-                            hover:scale-150
-                            transition-transform
-                            duration-300 ease-in-out
-                            " :class="{ 'fill-[#FF3E20]': props.tweet.isLiked }">
+                                    w-4 h-5 mt-1 hover:fill-[#FF3E20]  text-red-800 
+                                    hover:scale-150
+                                    transition-transform
+                                    duration-300 ease-in-out
+                                    " :class="{ 'fill-[#FF3E20]': props.tweet.isLiked }">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                         </svg>
@@ -177,6 +184,8 @@ const formatCreatedAt = (date) => {
                         class="w-60 border-2 bg-black rounded-lg border-gray-400 flex flex-col hover:scale-105 transition-transform ease-in-out">
 
                         <button v-if="ForAnyView(props.tweet.user.username)"
+                        @click="IsUserSure(props.tweet.user.username, 'unfollow')"
+
                             class="text-white px-2 py-3 hover:bg-gray-800 hover:text-blue text-sm border-2 border-gray-600  border-b">
                             <div class="flex">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -243,7 +252,8 @@ const formatCreatedAt = (date) => {
 
                         </button>
 
-                        <button v-if="AuthUserOptions(props.tweet.user.username)" @click="IsUserSure(props.tweet,'deleteTweet')"
+                        <button v-if="AuthUserOptions(props.tweet.user.username)"
+                            @click="IsUserSure(props.tweet.id, 'deleteTweet')"
                             class="text-white px-2 py-3 hover:text-red-900 hover:bg-red-300 text-sm border-2 border-gray-600  border-b">
                             <div class="flex">
 

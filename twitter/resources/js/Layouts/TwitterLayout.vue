@@ -40,7 +40,7 @@ const blurOn = () => {
     <TweetModal />
     <AreYouSureModal/>
 
-    <div class="h-screen flex w-full relative " :class="{'blur-xs':tweetsidebtn || edit}">
+    <div class="h-screen flex w-full relative " :class="{'blur-xs':tweetsidebtn || edit ||ShowAreYouSure}">
         <Sidebarlayout />
 
         <slot />

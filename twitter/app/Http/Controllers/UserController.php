@@ -28,19 +28,19 @@ class UserController extends Controller
     {
         $search = Request::input('search');
         $tweets = Tweet::with('user')
-        ->where('user_id', $user->id)
-        ->withCount('likes')
-        ->withCount('comments')
-        ->addSelect([
-            'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
-                ->whereColumn('likeable_id', 'tweets.id')
-                ->where('likeable_type', Tweet::class)
-                ->where('user_id', $user->id)
-                ->limit(1)
-        ])
-        ->latest()
-        ->get();
-    
+            ->where('user_id', $user->id)
+            ->withCount('likes')
+            ->withCount('comments')
+            ->addSelect([
+                'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                    ->whereColumn('likeable_id', 'tweets.id')
+                    ->where('likeable_type', Tweet::class)
+                    ->where('user_id', $user->id)
+                    ->limit(1)
+            ])
+            ->latest()
+            ->get();
+
         $followerCount = $user->followers()->count();
         $followingCount = $user->following()->count();
         return Inertia::render('UserShow', [
@@ -66,18 +66,18 @@ class UserController extends Controller
     {
         $search = Request::input('search');
         $tweets = Tweet::with('user')
-        ->where('user_id', $user->id)
-        ->withCount('likes')
-        ->withCount('comments')
-        ->addSelect([
-            'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
-                ->whereColumn('likeable_id', 'tweets.id')
-                ->where('likeable_type', Tweet::class)
-                ->where('user_id', $user->id)
-                ->limit(1)
-        ])
-        ->latest()
-        ->get();
+            ->where('user_id', $user->id)
+            ->withCount('likes')
+            ->withCount('comments')
+            ->addSelect([
+                'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                    ->whereColumn('likeable_id', 'tweets.id')
+                    ->where('likeable_type', Tweet::class)
+                    ->where('user_id', $user->id)
+                    ->limit(1)
+            ])
+            ->latest()
+            ->get();
         $followerCount = $user->followers()->count();
         $followingCount = $user->following()->count();
 
@@ -106,27 +106,19 @@ class UserController extends Controller
         if (!$targetUser) {
             abort(404, 'User not found');
         }
-        if($targetUser->username===$loggedInUser->username)
-        {
+        if ($targetUser->username === $loggedInUser->username) {
             abort(403, 'Forbidden');
 
         }
-        // Check if the logged-in user is already following the target user
-        //go to auth user
-        //in its following
-        //check if the user_id is target_id
-        //flower id will automaticaly be auth id  
+
         $isFollowing = $loggedInUser->following()->where('user_id', $targetUser->id)->exists();
         if ($isFollowing) {
-            // Unfollow the user
             $loggedInUser->following()->detach($targetUser->id);
             $isFollowing = false;
         } else {
-            // Follow the user
             $loggedInUser->following()->attach($targetUser->id);
             $isFollowing = true;
         }
-        // Update the isFollowing status and return the response
         $response = [
             'isFollowing' => $isFollowing,
         ];
@@ -134,14 +126,14 @@ class UserController extends Controller
     }
 
     public function showfollower(User $user)
-    
     {
         $followers = $user->followers()->latest()->get()->map(function ($user) {
             $user['isFollowing'] = $this->isFollowing($user->username);
-            $user['profile']=auth()->user()->username === $user->username;
-            $user['isHovered']=false;
+            $user['profile'] = auth()->user()->username === $user->username;
+            $user['isHovered'] = false;
             return $user;
-        }) ;
+        });
+        
         $search = Request::input('search');
 
         return Inertia::render(
@@ -150,13 +142,13 @@ class UserController extends Controller
                 'followers' => $followers,
                 "BeingVieweduser" => $user,
                 'users' => $search ? User::query()
-                ->where(function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('username', 'like', '%' . $search . '%');
-                })
-                ->where('id', '!=', auth()->user()->id)
-                ->limit(20)
-                ->get() : [],
+                    ->where(function ($query) use ($search) {
+                        $query->where('name', 'like', '%' . $search . '%')
+                            ->orWhere('username', 'like', '%' . $search . '%');
+                    })
+                    ->where('id', '!=', auth()->user()->id)
+                    ->limit(20)
+                    ->get() : [],
 
             ]
         );
@@ -166,24 +158,24 @@ class UserController extends Controller
         $search = Request::input('search');
         $following = $user->following()->latest()->get()->map(function ($user) {
             $user['isFollowing'] = $this->isFollowing($user->username);
-            $user['profile']=auth()->user()->username === $user->username;
-            $user['isHovered']=false;
+            $user['profile'] = auth()->user()->username === $user->username;
+            $user['isHovered'] = false;
 
             return $user;
-        }) ; 
+        });
         return Inertia::render(
             'Following',
-            [   
+            [
                 'following' => $following,
                 "BeingVieweduser" => $user,
                 'users' => $search ? User::query()
-                ->where(function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('username', 'like', '%' . $search . '%');
-                })
-                ->where('id', '!=', auth()->user()->id)
-                ->limit(20)
-                ->get()
+                    ->where(function ($query) use ($search) {
+                        $query->where('name', 'like', '%' . $search . '%')
+                            ->orWhere('username', 'like', '%' . $search . '%');
+                    })
+                    ->where('id', '!=', auth()->user()->id)
+                    ->limit(20)
+                    ->get()
                 : [],
 
             ]

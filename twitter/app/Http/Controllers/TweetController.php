@@ -51,6 +51,7 @@ class TweetController extends Controller
                 ->limit(20)
                 ->get() : [],
             'tweets' => $Tweets,
+
         ]);
     }
 

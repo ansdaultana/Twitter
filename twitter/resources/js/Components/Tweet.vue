@@ -1,5 +1,6 @@
 <script setup>
 import { defineProps, ref, computed, inject } from 'vue';
+import Bluetick from '@/Components/Bluetick.vue'
 import MessageOutline from 'vue-material-design-icons/MessageOutline.vue'
 import Sync from 'vue-material-design-icons/Sync.vue'
 import { router, usePage } from '@inertiajs/vue3'
@@ -122,6 +123,8 @@ const formatCreatedAt = (date) => {
             <div class="flex items-center justify-between w-full">
                 <div class="flex items-center" @click.stop="GoToUserPage(props.tweet.user.username)">
                     <p class="font-semibold text-white"> {{ props.tweet.user.name }} </p>
+                    <Bluetick :username="props.tweet.user.username" />
+
                     <p class="text-sm text-dark ml-2"> @{{ props.tweet.user.username }} </p>
                     <div class="hidden lg:block text-sm text-dark ml-2">&bull;</div>
                     <p class="  hidden lg:block text-sm text-dark ml-1"> {{ formatCreatedAt(props.tweet.created_at) }} </p>

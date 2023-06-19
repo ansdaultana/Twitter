@@ -20,6 +20,8 @@ id:{
     required:true
 }
 });
+const pic = computed(() => page.props.profilePic);
+
 const page=usePage();
 const tweetsidebtn = ref(inject('tweetsidebtn'));
 const user=computed(()=>page.props.auth.user);
@@ -52,7 +54,10 @@ const VisitProfile = (username) => {
         <div class="px-5 py-3 border-gray-800 border-b flex">
             <div class="flex-none">
                
-            <img @click="VisitProfile(user.username)" src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
+            <img @click="VisitProfile(user.username)" 
+            
+            
+            src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
                 class="flex-none w-12 h-12 rounded-full border border-lighter cursor-pointer" />
         </div>
             <form v-if="props.BtnText==='Tweet'" v-on:submit.prevent="addNewTweet" class="w-full px-4 relative">

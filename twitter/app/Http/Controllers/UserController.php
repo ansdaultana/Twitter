@@ -34,6 +34,7 @@ class UserController extends Controller
 
     public function show(User $user)
     {
+
         $search = Request::input('search');
         $tweets = Tweet::with('user')
             ->where('user_id', $user->id)
@@ -53,6 +54,8 @@ class UserController extends Controller
         $followingCount = $user->following()->count();
         return Inertia::render('UserShow', [
             "BeingVieweduser" => $user,
+
+            "admin"=> "ansdaultana",
             "tweets" => $tweets,
             'users' => $search ? User::query()
                 ->where(function ($query) use ($search) {
@@ -63,7 +66,6 @@ class UserController extends Controller
                 ->limit(20)
                 ->get() : [],
             'profile' => false,
-
             'followerCount' => $followerCount,
             'followingCount' => $followingCount,
             'auth_is_following_opened_user' => $this->isFollowing($user->username),
@@ -72,6 +74,7 @@ class UserController extends Controller
 
     public function index(User $user)
     {
+
         $search = Request::input('search');
         $tweets = Tweet::with('user')
             ->where('user_id', $user->id)
@@ -91,6 +94,7 @@ class UserController extends Controller
         return Inertia::render('UserShow', [
             "BeingVieweduser" => $user,
             "tweets" => $tweets,
+            "admin"=> "ansdaultana",
             'users' => $search ? User::query()
                 ->where(function ($query) use ($search) {
                     $query->where('name', 'like', '%' . $search . '%')
@@ -140,12 +144,14 @@ class UserController extends Controller
             $user['isHovered'] = false;
             return $user;
         });
+      
         
         $search = Request::input('search');
-
         return Inertia::render(
             'Followers',
             [
+            "admin"=> "ansdaultana",
+
                 'followers' => $followers,
                 "BeingVieweduser" => $user,
                 'users' => $search ? User::query()
@@ -173,6 +179,8 @@ class UserController extends Controller
         return Inertia::render(
             'Following',
             [
+            "admin"=> "ansdaultana",
+
                 'following' => $following,
                 "BeingVieweduser" => $user,
                 'users' => $search ? User::query()

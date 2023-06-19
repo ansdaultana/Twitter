@@ -46,6 +46,8 @@ class TweetController extends Controller
                 ->limit(20)
                 ->get() : [],
             'tweets' => $Tweets,
+            "admin"=> "ansdaultana",
+
 
         ]);
     }
@@ -145,6 +147,8 @@ class TweetController extends Controller
                 'replies' => $replies,
                 'authUser' => $loggedInUser,
                 'isLiked' => $loggedInUser->likes->where('tweet_id', $tweet->id)->count() > 0,
+            "admin"=> "ansdaultana",
+
             ]
         );
 

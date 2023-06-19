@@ -1,6 +1,6 @@
 <script setup>
 import Tweets from '@/Components/Tweets.vue';
-
+import Bluetick from '@/Components/Bluetick.vue';
 import { computed } from "vue";
 import { usePage, router } from '@inertiajs/vue3';
 import TwitterLayout from '@/Layouts/TwitterLayout.vue';
@@ -19,9 +19,9 @@ const tweets = ref(page.props.tweets);
 
 const profile = computed(() => page.props.profile);
 
-let followerCount = computed(()=>page.props.followerCount);
-let followingCount =computed(()=>page.props.followingCount);
-const tweetCount = computed(()=>page.props.tweets.length);
+let followerCount = computed(() => page.props.followerCount);
+let followingCount = computed(() => page.props.followingCount);
+const tweetCount = computed(() => page.props.tweets.length);
 
 const isFollowing = ref(page.props.auth_is_following_opened_user);
 
@@ -35,26 +35,24 @@ const followOrUnfollow = async (username) => {
     try {
         const response = await axios.post(`/users/${username}/follow`)
         isFollowing.value = response.data.isFollowing;
-  
-        if (isFollowing.value===true) {
-            followerCount.value++; 
+
+        if (isFollowing.value === true) {
+            followerCount.value++;
         } else {
-            followerCount.value--; 
-            
+            followerCount.value--;
+
         }
     } catch (error) {
         console.log(error)
     }
 }
 
-const ShowFollowing= (username) =>
-{
-router.get(`/${username}/following`);
+const ShowFollowing = (username) => {
+    router.get(`/${username}/following`);
 
 }
-const ShowFollower= (username) =>
-{
-router.get(`/${username}/follower`);
+const ShowFollower = (username) => {
+    router.get(`/${username}/follower`);
 
 }
 
@@ -75,8 +73,12 @@ router.get(`/${username}/follower`);
 
                     </button>
                     <div>
-                        <h1 class="text-xl text-white ml-3 font-bold">{{ BeingVieweduser.name }}</h1>
-                        <h3 class="text-md text-gray-400 ml-3 ">{{tweetCount}} tweets</h3>
+                        <div class="flex">
+                            <h1 class="text-xl text-white ml-3 font-bold">{{ BeingVieweduser.name }}</h1>
+                            <Bluetick :username="BeingVieweduser.username" />
+
+                        </div>
+                        <h3 class="text-md text-gray-400 ml-3 ">{{ tweetCount }} tweets</h3>
 
                     </div>
                 </div>
@@ -90,7 +92,7 @@ router.get(`/${username}/follower`);
                     src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
                     alt="Profile Picture" />
 
-                <div v-if="profile === false" >
+                <div v-if="profile === false">
                     <div>
                         <button @click="followOrUnfollow(BeingVieweduser.username)" class="mt-16 mr-4"
                             @mouseenter="isHovered = true" @mouseleave="isHovered = false">
@@ -110,8 +112,12 @@ router.get(`/${username}/follower`);
                 </div>
             </div>
             <div class="flex-col mb-3 ">
-                <h1 class="text-xl text-white ml-6 font-bold">{{ BeingVieweduser.name }}</h1>
+                <div class="flex">
 
+                    <h1 class="text-xl text-white ml-6 font-bold">{{ BeingVieweduser.name }}</h1>
+                    <Bluetick :username="BeingVieweduser.username" />
+    
+                </div>
                 <div class="flex ml-4">
                     <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="w-4 h-4 mt-1 text-dark ml-2">
@@ -122,20 +128,18 @@ router.get(`/${username}/follower`);
                 </div>
             </div>
             <div class="flex border-b-2 pb-8 border-gray-800">
-                <button 
-                @click="ShowFollowing(BeingVieweduser.username)"
-                class="text-gray-400 ml-4 hover:text-white transition-transform hover:scale-105 ease-in-out ">
-                   {{ followingCount }} following
+                <button @click="ShowFollowing(BeingVieweduser.username)"
+                    class="text-gray-400 ml-4 hover:text-white transition-transform hover:scale-105 ease-in-out ">
+                    {{ followingCount }} following
                 </button>
-                <button 
-                @click="ShowFollower(BeingVieweduser.username)"
-                
-                class="text-gray-400 ml-4 hover:text-white transition-transform hover:scale-105 ease-in-out  ">
-                    {{ followerCount }}  followers
+                <button @click="ShowFollower(BeingVieweduser.username)"
+                    class="text-gray-400 ml-4 hover:text-white transition-transform hover:scale-105 ease-in-out  ">
+                    {{ followerCount }} followers
                 </button>
             </div>
         </div>
-        <Tweets :Mytweets="tweets"/>
+
+        <Tweets :Mytweets="tweets" />
     </div>
 </template>
 

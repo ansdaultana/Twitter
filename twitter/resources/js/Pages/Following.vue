@@ -1,5 +1,6 @@
 <script setup>
 import TwitterLayout from '@/Layouts/TwitterLayout.vue';
+import Bluetick from '@/Components/Bluetick.vue'
 
 import { computed, ref } from "vue";
 import { usePage, router } from '@inertiajs/vue3';
@@ -82,7 +83,11 @@ const followOrUnfollow = async (following) => {
             <img src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
                 class="w-12 h-12 rounded-full border border-lighter" />
             <div class=" lg:block ml-4 ">
-                <p class="text-md font-bold leading-tight text-white "> {{ following.name }} </p>
+                <div class="flex">
+                    <p class="text-md font-bold leading-tight mt-1 text-white "> {{ following.name }} </p>
+                    <Bluetick :username="following.username" />
+    
+                </div>
 
                 <div class="flex ">
 

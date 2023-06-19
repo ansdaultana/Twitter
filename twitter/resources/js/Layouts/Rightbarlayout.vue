@@ -3,13 +3,14 @@
 import { router, usePage } from '@inertiajs/vue3';
 import { ref, watch, computed, watchEffect } from 'vue';
 import { onMounted, } from 'vue';
+import Bluetick from '@/Components/Bluetick.vue'
+
 const page = usePage();
 const users = computed(() => page.props.users);
 let currentPath = ref(window.location.pathname);
 let searchValue = ref('');
 const checkWindowLocation = () => {
     //if new location is /users/username and old loc is '/' then currentpath.val will be /users/username
-
     const newLocation = window.location.pathname;
     if (newLocation !== currentPath.value) {
         currentPath.value = newLocation;
@@ -66,7 +67,10 @@ let friends = [
                 <img src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
                     class="w-12 h-12 rounded-full border border-lighter" />
                 <div class=" ml-4 ">
-                    <p class="text-md font-bold leading-tight text-white "> {{ searchedUser.name }} </p>
+                    <div class="flex">
+                        <p class="text-md font-bold mt-1 leading-tight text-white "> {{ searchedUser.name }} </p>
+                        <Bluetick :username="searchedUser.username" />
+                    </div>
 
                     <div class="flex ">
                         <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"

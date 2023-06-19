@@ -20,7 +20,7 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', [UserController::class, 'get']);
+Route::get('/', [UserController::class, 'get'])->name('authcheck');
 Route::get('/register', [UserController::class, 'new']);
 
 

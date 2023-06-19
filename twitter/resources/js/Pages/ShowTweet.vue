@@ -302,7 +302,14 @@ const formatCreatedAt = (date) => {
         </div>
         <TweetCreate heading="Tweet Your Reply" BtnText="Reply" :id="tweet.id" />
 
-
+        <div class="px-5 py-4 border-gray-900 border-b flex justify-between">
+            <div class="flex">
+         
+                <div>
+                    <h1 class="text-xl text-white ml-3 font-bold">Replies:</h1>
+                </div>
+            </div>
+        </div>
 
         <Tweets :Mytweets="replies"/>
 

@@ -144,11 +144,11 @@ const formatCreatedAt = (date) => {
             <p class="py-2 text-white">
                 {{ tweet.text }}
             </p>
-            <div v-if="tweet.image">
-                <img :src='tweet.image'  class="rounded-lg">
+            <div v-if="tweet.image" class="flex justify-center">
+                <img :src='tweet.image'  class=" max-h-500 max-w-500 rounded-xl ">
             </div>
-            <div v-if="tweet.video">
-                <video  :src="tweet.video" controls/>
+            <div v-if="tweet.video" class="flex justify-center">
+                <video  :src="tweet.video" controls class=" max-h-500 max-w-500 rounded-xl "/>
 
             </div>
             <div class="flex items-center justify-between w-full">
@@ -292,3 +292,12 @@ const formatCreatedAt = (date) => {
         </div>
     </div>
 </template>
+<style>
+.max-h-500 {
+  max-height: 500px;
+}
+
+.max-w-500 {
+  max-width: 500px;
+}
+</style>

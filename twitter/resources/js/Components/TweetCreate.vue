@@ -215,8 +215,14 @@ const deleteImageOrVideo = () => {
                     class="w-6 h-6 text-white m-1 -ml-4 hover:bg-gray-600 rounded-full">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-                <img v-if="displayImage" :src='selectedImageUrl' />
-                <video v-if="displayVideo" :src="selectedVideoUrl" controls />
+                <div v-if="displayImage" class="flex justify-center">
+                    <img  :src='selectedImageUrl'  class=" max-h-500 max-w-500 rounded-xl ">
+                </div>
+                <div v-if="displayVideo" class="flex justify-center">
+                    <video  :src="selectedVideoUrl" controls class=" max-h-500 max-w-500 rounded-xl "/>
+    
+                </div>
+             
                 <div v-if="invalidUpload" v-text="invalidUploadText" class="text-red-600 text-xs"></div>
 
                 <div class="flex items-center gap-8 border-t mt-4 p-4 border-gray-800 ">

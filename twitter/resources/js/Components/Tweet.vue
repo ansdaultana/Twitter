@@ -112,7 +112,7 @@ const formatCreatedAt = (date) => {
 <template>
     <div class="w-full p-4 border-b border-gray-800 hover:bg-[#181818] flex cursor-pointer transition duration-200 ease-in-out"
         :class="{ 'hover:bg-black': Menu }" @click="GoToTweet(props.tweet.user.username, props.tweet.id)">
-        <div class="flex-none mr-4">
+        <div class="lg:flex-none hidden md:block mr-4">
             <div class="flex items-center" @click.stop="GoToUserPage(props.tweet.user.username)">
 
                 <img src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
@@ -120,7 +120,13 @@ const formatCreatedAt = (date) => {
             </div>
         </div>
         <div class="w-full relative">
-            <div class="flex items-center justify-between w-full">
+            <div class="flex items-center md:justify-between w-full">
+                <div class="md:hidden flex items-center mr-2" @click.stop="GoToUserPage(props.tweet.user.username)">
+
+                    <img src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
+                        class="h-12 w-12 rounded-full flex-none" />
+                </div>
+           
                 <div class="flex items-center" @click.stop="GoToUserPage(props.tweet.user.username)">
                     <p class="font-semibold text-white"> {{ props.tweet.user.name }} </p>
                     <Bluetick :username="props.tweet.user.username" />
@@ -145,7 +151,7 @@ const formatCreatedAt = (date) => {
                 {{ tweet.text }}
             </p>
             <div v-if="tweet.image" class="flex justify-center">
-                <img :src='tweet.image'  class=" max-h-500 max-w-500 rounded-xl ">
+                <img :src='tweet.image'  class=" max-h-500 max-w-500 rounded-xl w-96">
             </div>
             <div v-if="tweet.video" class="flex justify-center">
                 <video  :src="tweet.video" controls class=" max-h-500 max-w-500 rounded-xl "/>

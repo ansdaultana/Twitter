@@ -158,6 +158,14 @@ const formatCreatedAt = (date) => {
                     <p class="py-2 text-white">
                         {{ tweet.text }}
                     </p>
+                  
+                    <div v-if="tweet.image">
+                        <img :src='tweet.image'  class="rounded-lg">
+                    </div>
+                    <div v-if="tweet.video">
+                        <video  :src="tweet.video" controls/>
+        
+                    </div>
                     <div class="flex items-center justify-between w-full border-t border-gray-700 mt-2 py-1">
                         <div class="flex items-center text-sm text-dark">
                             <div class="flex justify-center items-center cursor-pointer">

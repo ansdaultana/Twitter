@@ -33,19 +33,31 @@ const page = usePage();
 const tweetsidebtn = ref(inject('tweetsidebtn'));
 const user = computed(() => page.props.auth.user);
 let newTweet = useForm({
-    text: ""
+    text: "",
+    image: null,
+    video: null,
 });
 let ReplyForm = useForm({
-    text: ""
+    text: "",
+    image: null,
+    video: null,
 });
 
 let addNewTweet = () => {
     newTweet.post('/createtweet');
+    displayImage.value = false;
+    displayVideo.value = false;
+    selectedVideo.value=null;
+    selectedImage.value=null;
     newTweet.text = ''
 }
 const postReply = (id) => {
     console.log(id)
     ReplyForm.post(`/replytweet/${id}`);
+    displayImage.value = false;
+    displayVideo.value = false;
+    selectedVideo.value=null;
+    selectedImage.value=null;
     ReplyForm.text = ''
 }
 const VisitProfile = (username) => {
@@ -55,12 +67,12 @@ const VisitProfile = (username) => {
     }
 }
 
-const UploadImage = (file) => {
+const UploadImageForLocalViewing = (file) => {
     displayImage.value = true;
     selectedImage.value = file
 }
 
-const UploadVideo = (file) => {
+const UploadVideoForLocalViewing = (file) => {
     selectedVideo.value = file;
     displayVideo.value = true;
 }
@@ -79,20 +91,19 @@ const selectedVideoUrl = computed(() => {
     }
     return null;
 });
-let Upload = (event) => {
+let UploadTweet = (event) => {
     const file = event.target.files[0];
     const filetype = file.type;
     if (filetype.includes('image')) {
-
-        UploadImage(file);
-
+        UploadImageForLocalViewing(file);
+        newTweet.image = file;
         invalidUpload.value = false;
         invalidUploadText.value = '';
     }
 
     else if (filetype.includes('video')) {
-        UploadVideo(file);
-
+        UploadVideoForLocalViewing(file);
+        newTweet.video = file;
         invalidUpload.value = false;
         invalidUploadText.value = '';
     }
@@ -100,19 +111,39 @@ let Upload = (event) => {
         invalidUpload.value = true;
         invalidUploadText.value = 'You can only Upload Picture or Video';
     }
+};
+let ReplyTweet = (event) => {
+    const file = event.target.files[0];
+    const filetype = file.type;
+    if (filetype.includes('image')) {
+        UploadImageForLocalViewing(file);
+        ReplyForm.image = file;
+        invalidUpload.value = false;
+        invalidUploadText.value = '';
+    }
 
+    else if (filetype.includes('video')) {
+        UploadVideoForLocalViewing(file);
+        ReplyForm.video = file;
+        invalidUpload.value = false;
+        invalidUploadText.value = '';
+    }
+    else {
+        invalidUpload.value = true;
+        invalidUploadText.value = 'You can only Upload Picture or Video';
+    }
 };
 const deleteImageOrVideo = () => {
 
     if (selectedImage.value) {
-        selectedImage.value=null;
-        displayImage.value=false;
-        
+        selectedImage.value = null;
+        displayImage.value = false;
+
     }
     else if (selectedVideo.value) {
-        selectedVideo.value=null;
-        displayVideo.value=false;
-        
+        selectedVideo.value = null;
+        displayVideo.value = false;
+
     }
 }
 </script>
@@ -141,7 +172,9 @@ const deleteImageOrVideo = () => {
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
                 <img v-if="displayImage" :src='selectedImageUrl' />
-                <video v-if="displayVideo" :src="selectedVideoUrl" controls />
+                <div class="h-auto">
+                    <video v-if="displayVideo" :src="selectedVideoUrl" controls/>
+                </div>
                 <div v-if="invalidUpload" v-text="invalidUploadText" class="text-red-600 text-xs"></div>
 
 
@@ -151,7 +184,7 @@ const deleteImageOrVideo = () => {
                             <ImageOutline fillColor="#48C9B0" :size=22 class="cursor-pointer" />
 
                         </label>
-                        <input type="file" id="fileUpload" class="hidden" @change="Upload">
+                        <input type="file" id="fileUpload" class="hidden" @change="UploadTweet">
                     </div>
 
                     <div class="hover:bg-gray-800 cursor-pointer p-2 rounded-full">
@@ -174,13 +207,13 @@ const deleteImageOrVideo = () => {
 
                 </div>
                 <svg v-if="displayImage || displayVideo" @click.stop="deleteImageOrVideo" fill="none" viewBox="0 0 24 24"
-                stroke-width="1.5" stroke="currentColor"
-                class="w-6 h-6 text-white m-1 -ml-4 hover:bg-gray-600 rounded-full">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            <img v-if="displayImage" :src='selectedImageUrl' />
-            <video v-if="displayVideo" :src="selectedVideoUrl" controls />
-            <div v-if="invalidUpload" v-text="invalidUploadText" class="text-red-600 text-xs"></div>
+                    stroke-width="1.5" stroke="currentColor"
+                    class="w-6 h-6 text-white m-1 -ml-4 hover:bg-gray-600 rounded-full">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <img v-if="displayImage" :src='selectedImageUrl' />
+                <video v-if="displayVideo" :src="selectedVideoUrl" controls />
+                <div v-if="invalidUpload" v-text="invalidUploadText" class="text-red-600 text-xs"></div>
 
                 <div class="flex items-center gap-8 border-t mt-4 p-4 border-gray-800 ">
                     <div class="hover:bg-gray-800 cursor-pointer p-2 rounded-full">
@@ -188,10 +221,10 @@ const deleteImageOrVideo = () => {
                             <ImageOutline fillColor="#48C9B0" :size=22 class="cursor-pointer" />
 
                         </label>
-                        <input type="file" id="fileUpload" class="hidden" @change="Upload">
+                        <input type="file" id="fileUpload" class="hidden" @change="ReplyTweet">
 
                     </div>
-                    
+
                     <div class="hover:bg-gray-800 cursor-pointer p-2 rounded-full">
                         <Emoticon fillColor="#48C9B0" :size=22 class="cursor-pointer" />
                     </div>

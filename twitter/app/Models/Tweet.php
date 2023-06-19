@@ -14,6 +14,8 @@ class Tweet extends Model
         'user_id',
         'text',
         'parent_tweet_id',
+        'image',
+        'video'
     ];
     public function user()
     {

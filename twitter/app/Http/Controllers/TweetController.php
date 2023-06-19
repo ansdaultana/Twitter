@@ -57,10 +57,21 @@ class TweetController extends Controller
         $attributes = request()->validate([
             'text' => 'required|min:3',
         ]);
-
         if (auth()->check()) {
             $attributes['user_id'] = Auth::id();
-            Tweet::create($attributes);
+            if (request()->file('image')) {
+                $uploadedImage = request()->file('image')->storeOnCloudinary();
+                $attributes['image'] = $uploadedImage->getSecurePath();
+            
+            }
+            else if(request()->file('video')) 
+            {
+
+                $uploadedVideo = request()->file('video')->storeOnCloudinary();
+                $attributes['video'] = $uploadedVideo->getSecurePath();
+            
+            }
+           Tweet::create($attributes);
         } else {
 
             abort(403);
@@ -106,7 +117,17 @@ class TweetController extends Controller
         if (auth()->check()) {
             $attributes['user_id'] = auth()->id();
             $attributes['parent_tweet_id'] = $tweet->id;
-
+            if (request()->file('image')) {
+                $uploadedImage = request()->file('image')->storeOnCloudinary();
+                $attributes['image'] = $uploadedImage->getSecurePath();
+            
+            }
+            else if (request()->file('video'))
+            {
+                $uploadedVideo = request()->file('video')->storeOnCloudinary();
+                $attributes['video'] = $uploadedVideo->getSecurePath();
+            
+            }
             Tweet::create($attributes);
         } else {
             abort(403);

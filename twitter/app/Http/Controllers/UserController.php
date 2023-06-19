@@ -86,6 +86,7 @@ class UserController extends Controller
                     ->where('user_id', $user->id)
                     ->limit(1)
             ])
+            ->whereNull('parent_tweet_id')
             ->latest()
             ->get();
         $followerCount = $user->followers()->count();

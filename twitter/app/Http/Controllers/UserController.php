@@ -74,7 +74,6 @@ class UserController extends Controller
 
     public function index(User $user)
     {
-
         $search = Request::input('search');
         $tweets = Tweet::with('user')
             ->where('user_id', $user->id)

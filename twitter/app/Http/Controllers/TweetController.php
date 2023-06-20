@@ -88,9 +88,13 @@ class TweetController extends Controller
             if (request('image')) {
                 $uploadedImage = request('image')->storeOnCloudinary();
                 $attributes['image'] = $uploadedImage->getSecurePath();
+                $attributes['video'] =null;
+
             } else if (request('video')) {
                 $uploadedVideo = request('video')->storeOnCloudinary();
                 $attributes['video'] = $uploadedVideo->getSecurePath();
+                $attributes['image'] =null;
+
             }
             $tweet->update($attributes);
         } else {

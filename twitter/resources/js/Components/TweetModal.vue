@@ -23,7 +23,7 @@ watch(edit, (newValue) => {
     }
     else if (EditTweet.value.video) {
       displayVideo.value = true;
-      selectedImage.value = EditTweet.value.video;
+      selectedVideo.value = EditTweet.value.video;
     }
   }
 })
@@ -61,8 +61,8 @@ const UploadImageForLocalViewing = (file) => {
 }
 
 const UploadVideoForLocalViewing = (file) => {
-  selectedVideo.value = URL.createObjectURL(file);
   displayVideo.value = true;
+  selectedVideo.value = URL.createObjectURL(file);
 }
 
 
@@ -82,14 +82,17 @@ const UploadNewPhotoOrVideo = (event) =>
   if (filetype.includes('image')) {
     UploadImageForLocalViewing(file);
     EditTweetForm.image = file;
+    EditTweetForm.video = null;
+
     invalidUpload.value = false;
     invalidUploadText.value = '';
   }
 
   else if (filetype.includes('video')) {
     UploadVideoForLocalViewing(file);
-    EditTweetForm.video = file
-    ;
+    EditTweetForm.video = file;
+    EditTweetForm.image = null;
+
     invalidUpload.value = false;
     invalidUploadText.value = '';
   }
@@ -137,6 +140,7 @@ const deleteImageOrVideo = () => {
 
   }
   else if (selectedVideo.value) {
+    console.log(selectedVideo.value);
     selectedVideo.value = null;
     displayVideo.value = false;
 
@@ -171,7 +175,7 @@ const deleteImageOrVideo = () => {
               <img :src='selectedImage ' class=" rounded-xl  ">
             </div>
           </div>
-          <div v-if="EditTweet.video" class="flex justify-center">
+          <div v-if="displayVideo" class="flex justify-center">
             <div class="sm:max-w-80 sm:max-h-80 h-70 w-80">
               <video :src="selectedVideo" controls class=" rounded-xl " />
             </div>

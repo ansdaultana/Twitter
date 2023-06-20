@@ -171,13 +171,15 @@ const deleteImageOrVideo = () => {
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
           <div v-if="displayImage" class="flex justify-center">
-            <div class="sm:max-w-80 sm:max-h-80 h-70 w-80">
-              <img :src='selectedImage ' class=" rounded-xl  ">
+            <div class="h-52 w-52 md:h-80 md:w-80">
+              <img :src="selectedImage" class="rounded-xl max-h-full max-w-full object-contain" />
             </div>
           </div>
+      
           <div v-if="displayVideo" class="flex justify-center">
-            <div class="sm:max-w-80 sm:max-h-80 h-70 w-80">
-              <video :src="selectedVideo" controls class=" rounded-xl " />
+            <div class="h-52 w-52 md:h-80 md:w-80">
+
+              <video :src="selectedVideo" controls class="rounded-xl max-h-full max-w-full object-contain" />
             </div>
           </div>
           <div class="flex items-center gap-8  border-t mt-4 p-4 border-gray-800">
@@ -203,7 +205,7 @@ const deleteImageOrVideo = () => {
           <div v-if="newTweet.errors.text" v-text="newTweet.errors.text" class="text-red-500 text-xs mt-1">
           </div>
           <div v-if="newTweet.image" class="flex justify-center">
-            <div class="sm:max-w-80 sm:max-h-80 h-70 w-80">
+            <div class="sm:h-40 sm:w-40 h-70 w-80">
               <img :src='newTweet.image' class=" rounded-xl  ">
             </div>
 
@@ -238,20 +240,4 @@ const deleteImageOrVideo = () => {
     </div>
   </div>
 </template>
-<style>
-.max-h-700 {
-  max-height: 500px;
-}
 
-.max-w-700 {
-  max-width: 500px;
-}
-
-.max-w-80 {
-  max-width: 80px;
-}
-
-.max-h-80 {
-  max-height: 80px;
-}
-</style>

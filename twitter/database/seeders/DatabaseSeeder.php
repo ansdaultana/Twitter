@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder
     {
 
 
-        $admin = User::factory()->create(['name' => 'Ans Daultana', 'username' => 'ansdaultana', 'email' => 'ansdaultana.ad5@gmail.com', 'password' => '12121212']);
-        $elon = User::factory()->create(['name' => 'Elon Musk', 'username' => 'elonmusk', 'email' => 'elonmusk@twitter.com', 'password' => '12121212']);
+        $admin = User::factory()->create(['id'=>1,'name' => 'Ans Daultana', 'username' => 'ansdaultana', 'email' => 'ansdaultana.ad5@gmail.com', 'password' => '12121212']);
+        $elon = User::factory()->create(['id'=>2,'name' => 'Elon Musk', 'username' => 'elonmusk', 'email' => 'elonmusk@twitter.com', 'password' => '12121212']);
        
         // User::factory(9)->create();
 

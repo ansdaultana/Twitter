@@ -4,6 +4,7 @@ import Close from 'vue-material-design-icons/Close.vue';
 import ImageOutline from 'vue-material-design-icons/ImageOutline.vue';
 import Emoticon from 'vue-material-design-icons/Emoticon.vue';
 import { useForm } from '@inertiajs/vue3'
+import { onUnmounted, onMounted } from 'vue';
 const edit = ref(inject('edit'));
 const tweetsidebtn = ref(inject('tweetsidebtn'));
 const EditTweet = ref(inject('EditTweet'));
@@ -15,15 +16,22 @@ const selectedVideo = ref(null)
 const invalidUpload = ref(false)
 const invalidUploadText = ref('')
 
+
 watch(edit, (newValue) => {
   if (newValue) {
     if (EditTweet.value.image) {
       displayImage.value = true;
       selectedImage.value = EditTweet.value.image;
+
+      displayVideo.value = false;
+      selectedVideo.value = null;
     }
     else if (EditTweet.value.video) {
       displayVideo.value = true;
       selectedVideo.value = EditTweet.value.video;
+      displayImage.value = false;
+      selectedImage.value = null;
+
     }
   }
 })
@@ -31,6 +39,10 @@ watch(edit, (newValue) => {
 const closemodal = () => {
   tweetsidebtn.value = false;
   edit.value = false;
+  displayImage.value = false;
+  selectedImage.value = null;
+  displayVideo.value = false;
+  selectedVideo.value = null;
   EditTweet.value = null;
 }
 
@@ -75,8 +87,7 @@ let EditTweetfunc = (id) => {
   selectedVideo.value = null;
   selectedImage.value = null;
 }
-const UploadNewPhotoOrVideo = (event) =>
-{
+const UploadNewPhotoOrVideo = (event) => {
   const file = event.target.files[0];
   const filetype = file.type;
   if (filetype.includes('image')) {
@@ -108,6 +119,7 @@ let addNewTweet = () => {
   displayVideo.value = false;
   selectedVideo.value = null;
   selectedImage.value = null;
+  tweetsidebtn.value=false;
   newTweet.text = ''
 }
 let UploadTweet = (event) => {
@@ -116,6 +128,7 @@ let UploadTweet = (event) => {
   if (filetype.includes('image')) {
     UploadImageForLocalViewing(file);
     newTweet.image = file;
+    newTweet.video = null;
     invalidUpload.value = false;
     invalidUploadText.value = '';
   }
@@ -123,6 +136,7 @@ let UploadTweet = (event) => {
   else if (filetype.includes('video')) {
     UploadVideoForLocalViewing(file);
     newTweet.video = file;
+    newTweet.image = null;
     invalidUpload.value = false;
     invalidUploadText.value = '';
   }
@@ -175,7 +189,7 @@ const deleteImageOrVideo = () => {
               <img :src="selectedImage" class="rounded-xl max-h-full max-w-full object-contain" />
             </div>
           </div>
-      
+
           <div v-if="displayVideo" class="flex justify-center">
             <div class="h-52 w-52 md:h-80 md:w-80">
 
@@ -201,28 +215,31 @@ const deleteImageOrVideo = () => {
         </form>
         <form v-if="tweetsidebtn" v-on:submit.prevent="addNewTweet" class="w-full px-4 relative">
           <textarea v-model="newTweet.text" placeholder="What's up?"
-            class="mt-3 pb-3 bg-black text-white w-full focus:outline-none" rows="5" required minlength="3" autofocus />
+            class="mt-3 pb-3 bg-black text-white w-full focus:outline-none" :rows="tweetsidebtn ? 2 : 5" required minlength="3" autofocus />
           <div v-if="newTweet.errors.text" v-text="newTweet.errors.text" class="text-red-500 text-xs mt-1">
           </div>
-          <div v-if="newTweet.image" class="flex justify-center">
-            <div class="sm:h-40 sm:w-40 h-70 w-80">
-              <img :src='newTweet.image' class=" rounded-xl  ">
-            </div>
-
-          </div>
-          <div v-if="newTweet.video" class="flex justify-center">
-            <div class="sm:max-w-80 sm:max-h-80 h-70 w-80">
-
-              <video :src="newTweet.video" controls class=" rounded-xl " />
-
+          <svg v-if="displayImage || displayVideo" @click.stop="deleteImageOrVideo" fill="none" viewBox="0 0 24 24"
+          stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white  -ml-4 hover:bg-gray-600 rounded-full">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+          <div v-if="displayImage" class="flex justify-center">
+            <div class="h-52 w-52 md:h-80 md:w-80">
+              <img :src="selectedImage" class="rounded-xl max-h-full max-w-full object-contain" />
             </div>
           </div>
-          <div class="flex items-center gap-8  border-t mt-4 p-4 border-gray-800">
+
+          <div v-if="displayVideo" class="flex justify-center">
+            <div class="h-52 w-52 md:h-80 md:w-80">
+
+              <video :src="selectedVideo" controls class="rounded-xl max-h-full max-w-full object-contain" />
+            </div>
+          </div>
+         <div class="flex items-center gap-8  border-t mt-4 p-4 border-gray-800">
             <div class="hover:bg-gray-800 cursor-pointer p-2 rounded-full">
               <label for="fileUpload" class="cursor-pointer">
                 <ImageOutline fillColor="#48C9B0" :size=22 class="cursor-pointer" />
               </label>
-              <input type="file" id="fileUpload" class="hidden" @change="get">
+              <input type="file" id="fileUpload" class="hidden" @change="UploadTweet">
             </div>
             <div class="hover:bg-gray-800 cursor-pointer p-2 rounded-full">
               <Emoticon fillColor="#48C9B0" :size=22 class="cursor-pointer" />

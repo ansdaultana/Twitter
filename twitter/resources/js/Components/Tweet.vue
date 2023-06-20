@@ -136,7 +136,7 @@ const formatCreatedAt = (date) => {
                     <p class="  hidden lg:block text-sm text-dark ml-1"> {{ formatCreatedAt(props.tweet.created_at) }} </p>
                 </div>
 
-                <div class="flex">
+                <div class="flex ">
 
                     <button @click.stop="openMenu" class="p-1 m-2 h-8 rounded-full hover:bg-zinc">
                         <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -147,6 +147,7 @@ const formatCreatedAt = (date) => {
                     </button>
                 </div>
             </div>
+            
             <p class="py-2 text-white">
                 {{ tweet.text }}
             </p>
@@ -161,7 +162,7 @@ const formatCreatedAt = (date) => {
                 <div class="flex items-center text-sm text-dark">
                     <div class="flex justify-center items-center cursor-pointer">
                         <MessageOutline class="hover:bg-blue mt-1  p-2 rounded-full" fillColor="blue" size=12 />
-                        <span class="text-sm font-extrabold text-[#5e5c5c]  mt-1 ml-2">{{ props.tweet.comments_count
+                        <span class="text-sm font-extrabold text-[#5e5c5c]  mt-1 ml-2">{{ props.tweet.replies_count
                         }}</span>
 
                     </div>

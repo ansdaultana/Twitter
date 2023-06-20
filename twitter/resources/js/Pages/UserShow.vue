@@ -138,7 +138,6 @@ const ShowFollower = (username) => {
                 </button>
             </div>
         </div>
-
         <Tweets :Mytweets="tweets" />
     </div>
 </template>

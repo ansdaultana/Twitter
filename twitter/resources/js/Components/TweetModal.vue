@@ -1,5 +1,5 @@
 <script setup>
-import { ref, inject, computed, watch } from 'vue';
+import { ref, inject, computed, watch, } from 'vue';
 import Close from 'vue-material-design-icons/Close.vue';
 import ImageOutline from 'vue-material-design-icons/ImageOutline.vue';
 import Emoticon from 'vue-material-design-icons/Emoticon.vue';
@@ -7,6 +7,26 @@ import { useForm } from '@inertiajs/vue3'
 const edit = ref(inject('edit'));
 const tweetsidebtn = ref(inject('tweetsidebtn'));
 const EditTweet = ref(inject('EditTweet'));
+
+const displayImage = ref(false);
+const displayVideo = ref(false);
+const selectedImage = ref(null)
+const selectedVideo = ref(null)
+const invalidUpload = ref(false)
+const invalidUploadText = ref('')
+
+watch(edit, (newValue) => {
+  if (newValue) {
+    if (EditTweet.value.image) {
+      displayImage.value = true;
+      selectedImage.value = EditTweet.value.image;
+    }
+    else if (EditTweet.value.video) {
+      displayVideo.value = true;
+      selectedImage.value = EditTweet.value.video;
+    }
+  }
+})
 
 const closemodal = () => {
   tweetsidebtn.value = false;
@@ -21,7 +41,9 @@ const isTweetSideBtnVisible = computed(() => {
 
 
 let newTweet = useForm({
-  text: ""
+  text: "",
+  image: null,
+  video: null,
 });
 watch(EditTweet, (newValue) => {
   EditTweetForm.text = newValue ? newValue.text : '';
@@ -29,55 +51,137 @@ watch(EditTweet, (newValue) => {
 let EditTweetForm = useForm(
   {
     text: '',
+    image: null,
+    video: null,
   }
 )
-
-
-let addNewTweet = () => {
-  tweetsidebtn.value = !tweetsidebtn.value;
-
-  newTweet.post('/createtweet');
-  newTweet.text = ''
+const UploadImageForLocalViewing = (file) => {
+  displayImage.value = true;
+  selectedImage.value = URL.createObjectURL(file)
 }
+
+const UploadVideoForLocalViewing = (file) => {
+  selectedVideo.value = URL.createObjectURL(file);
+  displayVideo.value = true;
+}
+
+
 let EditTweetfunc = (id) => {
   tweetsidebtn.value = false;
   edit.value = false;
   EditTweetForm.post(`/edittweet/${id}`);
+  displayImage.value = false;
+  displayVideo.value = false;
+  selectedVideo.value = null;
+  selectedImage.value = null;
+}
+const UploadNewPhotoOrVideo = (event) =>
+{
+  const file = event.target.files[0];
+  const filetype = file.type;
+  if (filetype.includes('image')) {
+    UploadImageForLocalViewing(file);
+    EditTweetForm.image = file;
+    invalidUpload.value = false;
+    invalidUploadText.value = '';
+  }
+
+  else if (filetype.includes('video')) {
+    UploadVideoForLocalViewing(file);
+    EditTweetForm.video = file
+    ;
+    invalidUpload.value = false;
+    invalidUploadText.value = '';
+  }
+  else {
+    invalidUpload.value = true;
+    invalidUploadText.value = 'You can only Upload Picture or Video';
+  }
+}
+
+let addNewTweet = () => {
+  newTweet.post('/createtweet');
+  displayImage.value = false;
+  displayVideo.value = false;
+  selectedVideo.value = null;
+  selectedImage.value = null;
+  newTweet.text = ''
+}
+let UploadTweet = (event) => {
+  const file = event.target.files[0];
+  const filetype = file.type;
+  if (filetype.includes('image')) {
+    UploadImageForLocalViewing(file);
+    newTweet.image = file;
+    invalidUpload.value = false;
+    invalidUploadText.value = '';
+  }
+
+  else if (filetype.includes('video')) {
+    UploadVideoForLocalViewing(file);
+    newTweet.video = file;
+    invalidUpload.value = false;
+    invalidUploadText.value = '';
+  }
+  else {
+    invalidUpload.value = true;
+    invalidUploadText.value = 'You can only Upload Picture or Video';
+  }
+};
+
+const deleteImageOrVideo = () => {
+
+  if (selectedImage.value) {
+    selectedImage.value = null;
+    displayImage.value = false;
+
+  }
+  else if (selectedVideo.value) {
+    selectedVideo.value = null;
+    displayVideo.value = false;
+
+  }
 }
 </script>
-
 <template>
   <div v-if="tweetsidebtn || edit"
     class=" fixed top-10 left-0 right-0 flex items-center justify-center z-50  hover:scale-105 ease-in duration-300">
-    <div class="bg-black rounded border border-gray-800 w-96 lg:w-1/2 m-10">
-      <button class="cursor-pinter p-2 " @click="closemodal">
+    <div class="bg-black rounded border border-gray-800 w-96 lg:w-1/2 lg:m-10">
+      <button class="cursor-pinter p-2" @click="closemodal">
         <Close size=20 fillColor="white" />
       </button>
       <div class="px-5 py-3 border-gray-800 border-b flex  bg-black ">
-        <div class="flex-none">
+        <div class="lg:flex-none hidden lg:block md:mr-4">
           <img
             src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
             class="w-12 h-12 rounded-full border border-lighter" />
         </div>
-        <button>
-          <Close />
-        </button>
-
         <form v-on:submit.prevent="EditTweetfunc(EditTweet.id)" v-if="edit" class="w-full px-4 relative">
-
           <textarea v-model="EditTweetForm.text" v-text="EditTweet.text"
-            class="mt-3 pb-3 bg-black text-white w-full focus:outline-none" rows="5" required minlength="3" autofocus />
-
-
+            class="mt-3 pb-2 bg-black text-white w-full focus:outline-none" :rows="edit ? 2 : 5" required minlength="3"
+            autofocus />
           <div v-if="EditTweetForm.errors.text" v-text="EditTweetForm.errors.text" class="text-red-500 text-xs mt-1">
           </div>
-
+          <svg v-if="displayImage || displayVideo" @click.stop="deleteImageOrVideo" fill="none" viewBox="0 0 24 24"
+            stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white  -ml-4 hover:bg-gray-600 rounded-full">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <div v-if="displayImage" class="flex justify-center">
+            <div class="sm:max-w-80 sm:max-h-80 h-70 w-80">
+              <img :src='selectedImage ' class=" rounded-xl  ">
+            </div>
+          </div>
+          <div v-if="EditTweet.video" class="flex justify-center">
+            <div class="sm:max-w-80 sm:max-h-80 h-70 w-80">
+              <video :src="selectedVideo" controls class=" rounded-xl " />
+            </div>
+          </div>
           <div class="flex items-center gap-8  border-t mt-4 p-4 border-gray-800">
             <div class="hover:bg-gray-800 cursor-pointer p-2 rounded-full">
               <label for="fileUpload" class="cursor-pointer">
                 <ImageOutline fillColor="#48C9B0" :size=22 class="cursor-pointer" />
               </label>
-              <input type="file" id="fileUpload" class="hidden" @change="get">
+              <input type="file" id="fileUpload" class="hidden" @change="UploadNewPhotoOrVideo">
             </div>
             <div class="hover:bg-gray-800 cursor-pointer p-2 rounded-full">
               <Emoticon fillColor="#48C9B0" :size=22 class="cursor-pointer" />
@@ -94,7 +198,19 @@ let EditTweetfunc = (id) => {
             class="mt-3 pb-3 bg-black text-white w-full focus:outline-none" rows="5" required minlength="3" autofocus />
           <div v-if="newTweet.errors.text" v-text="newTweet.errors.text" class="text-red-500 text-xs mt-1">
           </div>
+          <div v-if="newTweet.image" class="flex justify-center">
+            <div class="sm:max-w-80 sm:max-h-80 h-70 w-80">
+              <img :src='newTweet.image' class=" rounded-xl  ">
+            </div>
 
+          </div>
+          <div v-if="newTweet.video" class="flex justify-center">
+            <div class="sm:max-w-80 sm:max-h-80 h-70 w-80">
+
+              <video :src="newTweet.video" controls class=" rounded-xl " />
+
+            </div>
+          </div>
           <div class="flex items-center gap-8  border-t mt-4 p-4 border-gray-800">
             <div class="hover:bg-gray-800 cursor-pointer p-2 rounded-full">
               <label for="fileUpload" class="cursor-pointer">
@@ -118,4 +234,20 @@ let EditTweetfunc = (id) => {
     </div>
   </div>
 </template>
+<style>
+.max-h-700 {
+  max-height: 500px;
+}
 
+.max-w-700 {
+  max-width: 500px;
+}
+
+.max-w-80 {
+  max-width: 80px;
+}
+
+.max-h-80 {
+  max-height: 80px;
+}
+</style>

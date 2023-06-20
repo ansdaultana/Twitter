@@ -62,7 +62,6 @@ class TweetController extends Controller
             if (request()->file('image')) {
                 $uploadedImage = request()->file('image')->storeOnCloudinary();
                 $attributes['image'] = $uploadedImage->getSecurePath();
-            
             }
             else if(request()->file('video')) 
             {
@@ -78,23 +77,27 @@ class TweetController extends Controller
         }
     }
 
-
     public function edit(Tweet $tweet)
     {
-
         $attributes = request()->validate([
             'text' => 'required|min:3',
+          
         ]);
-
+    
         if (auth()->check() && $tweet->user->id === auth()->id()) {
-
-            $tweet['text'] = $attributes['text'];
-            $tweet->save();
+            if (request('image')) {
+                $uploadedImage = request('image')->storeOnCloudinary();
+                $attributes['image'] = $uploadedImage->getSecurePath();
+            } else if (request('video')) {
+                $uploadedVideo = request('video')->storeOnCloudinary();
+                $attributes['video'] = $uploadedVideo->getSecurePath();
+            }
+            $tweet->update($attributes);
         } else {
-
             abort(403);
         }
     }
+    
     public function delete(Tweet $tweet)
     {
 

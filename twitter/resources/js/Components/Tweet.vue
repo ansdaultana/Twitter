@@ -160,7 +160,6 @@ const formatCreatedAt = (date) => {
             <div class="flex items-center justify-between w-full">
                 <div class="flex items-center text-sm text-dark">
                     <div class="flex justify-center items-center cursor-pointer">
-
                         <MessageOutline class="hover:bg-blue mt-1  p-2 rounded-full" fillColor="blue" size=12 />
                         <span class="text-sm font-extrabold text-[#5e5c5c]  mt-1 ml-2">{{ props.tweet.comments_count
                         }}</span>

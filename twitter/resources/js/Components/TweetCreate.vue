@@ -52,7 +52,6 @@ let addNewTweet = () => {
     newTweet.text = ''
 }
 const postReply = (id) => {
-    console.log(id)
     ReplyForm.post(`/replytweet/${id}`);
     displayImage.value = false;
     displayVideo.value = false;
@@ -148,11 +147,11 @@ const deleteImageOrVideo = () => {
 }
 </script>
 
-
 <template>
     <div name="modal" v-if="tweetsidebtn === false">
         <div class="px-5 py-3 border-gray-800 border-b flex">
-            <div class="flex-none">
+            <div class="lg:flex-none hidden lg:block md:mr-4">
+
 
                 <img @click="VisitProfile(user.username)"
                     src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
@@ -216,8 +215,11 @@ const deleteImageOrVideo = () => {
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
                 <div v-if="displayImage" class="flex justify-center">
-                    <img  :src='selectedImageUrl'  class=" max-h-500 max-w-500 rounded-xl ">
+            <div class="sm:max-w-80 sm:max-h-80 h-70 w-70">
+
+                    <img  :src='selectedImageUrl'  class=" rounded-xl ">
                 </div>
+            </div>
                 <div v-if="displayVideo" class="flex justify-center">
                     <video  :src="selectedVideoUrl" controls class=" max-h-500 max-w-500 rounded-xl "/>
     

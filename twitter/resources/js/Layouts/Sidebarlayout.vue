@@ -76,7 +76,7 @@ const VisitProfile = (username) => {
         <button class="flex items-center" @click="dropdown = !dropdown">
 
           <img
-            src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
+          src="https://res.cloudinary.com/ddrivhxfq/image/upload/v1687330227/Screenshot_91_g4j2oa.png"
             class="w-12 h-12 border border-gray-800 rounded-full" alt="" />
           <div class="hidden lg:block ml-4">
             <p class="text-sm text-white font-bold leading-tight">{{ user.name }}</p>

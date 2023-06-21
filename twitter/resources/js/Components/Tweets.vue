@@ -1,6 +1,6 @@
 <script setup>
 import Tweet from "@/Components/Tweet.vue";
-import { defineProps } from 'vue';
+import { defineProps, computed} from 'vue';
 
 const props = defineProps({
   Mytweets: {
@@ -12,6 +12,6 @@ const props = defineProps({
 
 <template>
   <div>
-    <Tweet v-for="tweet in Mytweets" :key="tweet.id" :tweet="tweet" />
+    <Tweet v-for="tweet in props.Mytweets" :key="tweet.id" :tweet="tweet" />
   </div>
 </template>

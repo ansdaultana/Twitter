@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, ref, computed, inject } from 'vue';
+import { defineProps, ref, computed, inject,toRef } from 'vue';
 import Bluetick from '@/Components/Bluetick.vue'
 import MessageOutline from 'vue-material-design-icons/MessageOutline.vue'
 import Sync from 'vue-material-design-icons/Sync.vue'
@@ -115,16 +115,20 @@ const formatCreatedAt = (date) => {
         <div class="lg:flex-none hidden md:block mr-4">
             <div class="flex items-center" @click.stop="GoToUserPage(props.tweet.user.username)">
 
-                <img src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
-                    class="h-12 w-12 rounded-full flex-none" />
+                <img 
+                :src='props.tweet.user.profile'
+                
+                class="h-12 w-12 rounded-full flex-none" />
             </div>
         </div>
         <div class="w-full relative">
             <div class="flex items-center md:justify-between w-full">
                 <div class="md:hidden flex items-center mr-2" @click.stop="GoToUserPage(props.tweet.user.username)">
 
-                    <img src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
-                        class="h-12 w-12 rounded-full flex-none" />
+                    <img 
+                :src='props.tweet.user.profile'
+                    
+                    class="h-12 w-12 rounded-full flex-none" />
                 </div>
            
                 <div class="flex items-center" @click.stop="GoToUserPage(props.tweet.user.username)">

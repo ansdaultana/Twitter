@@ -1,7 +1,7 @@
 <script setup>
 import Tweets from '@/Components/Tweets.vue';
 import Bluetick from '@/Components/Bluetick.vue';
-import { computed } from "vue";
+import { computed ,inject} from "vue";
 import { usePage, router } from '@inertiajs/vue3';
 import TwitterLayout from '@/Layouts/TwitterLayout.vue';
 import TweetModal from "@/Components/TweetModal.vue";
@@ -9,13 +9,15 @@ import axios from 'axios';
 import { ref } from 'vue'
 import { Head } from '@inertiajs/vue3';
 
+const openEditProfile=ref(inject('openEditProfile'));
+
 defineOptions({
     layout: TwitterLayout,
 });
 const isHovered = ref(false);
 const page = usePage();
 const BeingVieweduser = ref(page.props.BeingVieweduser);
-const tweets = ref(page.props.tweets);
+const tweets = computed(() => page.props.tweets);
 
 const profile = computed(() => page.props.profile);
 
@@ -84,12 +86,13 @@ const ShowFollower = (username) => {
                 </div>
             </div>
             <img name="cover" class="z-0 -mb-14 w-full h-56 "
-                src="https://c4.wallpaperflare.com/wallpaper/666/665/244/the-magic-islands-of-lofoten-norway-europe-winter-morning-light-landscape-desktop-hd-wallpaper-for-pc-tablet-and-mobile-3840%C3%972160-wallpaper-preview.jpg"
+                :src='BeingVieweduser.cover'
                 alt="">
             <div class="flex justify-between">
                 <img name="profile"
                     class=" w-32 h-32 ml-4 mb-4 z-10 rounded-full -bottom-1 right-0 border-2 border-white bg-gray-900"
-                    src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
+                :src='BeingVieweduser.profile'
+                   
                     alt="Profile Picture" />
 
                 <div v-if="profile === false">
@@ -110,13 +113,23 @@ const ShowFollower = (username) => {
                     </div>
 
                 </div>
+                <div v-if="profile === true">
+
+                    <button
+                    @click.stop="openEditProfile=!openEditProfile"
+                        class="text-white rounded-full border-2 px-2 py-1 hover:bg-zinc hover:text-black hover:border-black mt-16 mr-4">
+                        Edit Profile
+                    </button>
+
+
+                </div>
             </div>
             <div class="flex-col mb-3 ">
                 <div class="flex">
 
                     <h1 class="text-xl text-white ml-6 font-bold">{{ BeingVieweduser.name }}</h1>
                     <Bluetick :username="BeingVieweduser.username" />
-    
+
                 </div>
                 <div class="flex ml-4">
                     <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"

@@ -4,6 +4,7 @@ import Sidebarlayout from "@/Layouts/Sidebarlayout.vue";
 import Rightbarlayout from '@/Layouts/Rightbarlayout.vue';
 import TweetModal from "@/Components/TweetModal.vue";
 import AreYouSureModal from "@/Components/AreYouSureModal.vue";
+import ProfileEditModal from '@/Components/ProfileEditModal.vue';
 
 const tweetsidebtn = ref(false);
 const blur = ref(false);
@@ -11,7 +12,7 @@ const edit=ref(false);
 const EditTweet=ref(null);
 const AreYouSure=ref({id:'',Method:''});
 const ShowAreYouSure=ref(false);
-
+const openEditProfile=ref(false);
 
 const textarea = ref(null);
 
@@ -21,6 +22,7 @@ provide('edit', edit);
 provide('EditTweet', EditTweet);
 provide('AreYouSure', AreYouSure);
 provide('ShowAreYouSure', ShowAreYouSure);
+provide('openEditProfile', openEditProfile);
 
 
 
@@ -39,6 +41,7 @@ const blurOn = () => {
 <template>
     <TweetModal />
     <AreYouSureModal/>
+    <ProfileEditModal />
 
     <div class="h-screen flex w-full relative " :class="{'blur-xs':tweetsidebtn || edit ||ShowAreYouSure}">
         <Sidebarlayout />

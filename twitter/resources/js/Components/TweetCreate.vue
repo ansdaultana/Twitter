@@ -47,21 +47,21 @@ let addNewTweet = () => {
     newTweet.post('/createtweet');
     displayImage.value = false;
     displayVideo.value = false;
-    selectedVideo.value=null;
-    selectedImage.value=null;
+    selectedVideo.value = null;
+    selectedImage.value = null;
     newTweet.text = ''
 }
 const postReply = (id) => {
     ReplyForm.post(`/replytweet/${id}`);
     displayImage.value = false;
     displayVideo.value = false;
-    selectedVideo.value=null;
-    selectedImage.value=null;
+    selectedVideo.value = null;
+    selectedImage.value = null;
     ReplyForm.text = ''
 }
 const VisitProfile = (username) => {
     if (window.location.pathname !== `/users/${username}`) {
-        router.get(`/users/${username}`);
+        router.get(`/${username}`);
 
     }
 }
@@ -153,10 +153,8 @@ const deleteImageOrVideo = () => {
             <div class="lg:flex-none hidden lg:block md:mr-4">
 
 
-                <img @click="VisitProfile(user.username)"
-                :src='user.profile'
-                  
-                class="flex-none w-12 h-12 rounded-full border border-lighter cursor-pointer" />
+                <img @click="VisitProfile(user.username)" :src='user.profile'
+                    class="flex-none w-12 h-12 rounded-full border border-lighter cursor-pointer" />
             </div>
             <form v-if="props.BtnText === 'Tweet'" v-on:submit.prevent="addNewTweet" class="w-full px-4 relative">
                 <textarea v-model="newTweet.text" :placeholder=props.heading
@@ -172,13 +170,13 @@ const deleteImageOrVideo = () => {
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
                 <div v-if="displayImage" class="flex justify-center">
-                    <img  :src='selectedImageUrl'  class=" max-h-500 max-w-500 rounded-xl ">
+                    <img :src='selectedImageUrl' class=" max-h-500 max-w-500 rounded-xl ">
                 </div>
                 <div v-if="displayVideo" class="flex justify-center">
-                    <video  :src="selectedVideoUrl" controls class=" max-h-500 max-w-500 rounded-xl "/>
-    
+                    <video :src="selectedVideoUrl" controls class=" max-h-500 max-w-500 rounded-xl " />
+
                 </div>
-             
+
                 <div v-if="invalidUpload" v-text="invalidUploadText" class="text-red-600 text-xs"></div>
 
 
@@ -216,16 +214,16 @@ const deleteImageOrVideo = () => {
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
                 <div v-if="displayImage" class="flex justify-center">
-            <div class="sm:max-w-80 sm:max-h-80 h-70 w-70">
+                    <div class="sm:max-w-80 sm:max-h-80 h-70 w-70">
 
-                    <img  :src='selectedImageUrl'  class=" rounded-xl ">
+                        <img :src='selectedImageUrl' class=" rounded-xl ">
+                    </div>
                 </div>
-            </div>
                 <div v-if="displayVideo" class="flex justify-center">
-                    <video  :src="selectedVideoUrl" controls class=" max-h-500 max-w-500 rounded-xl "/>
-    
+                    <video :src="selectedVideoUrl" controls class=" max-h-500 max-w-500 rounded-xl " />
+
                 </div>
-             
+
                 <div v-if="invalidUpload" v-text="invalidUploadText" class="text-red-600 text-xs"></div>
 
                 <div class="flex items-center gap-8 border-t mt-4 p-4 border-gray-800 ">
@@ -252,10 +250,10 @@ const deleteImageOrVideo = () => {
 </template>
 <style>
 .max-h-500 {
-  max-height: 500px;
+    max-height: 500px;
 }
 
 .max-w-500 {
-  max-width: 500px;
+    max-width: 500px;
 }
 </style>

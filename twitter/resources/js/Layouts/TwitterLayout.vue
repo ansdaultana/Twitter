@@ -26,15 +26,6 @@ provide('openEditProfile', openEditProfile);
 
 
 
-const blurOn = () => {
-    if (tweetsidebtn) {
-        return true;
-    }
-    if (edit) {
-        return true;
-    }
-    return false;
-}
 
 </script>
 
@@ -43,7 +34,7 @@ const blurOn = () => {
     <AreYouSureModal/>
     <ProfileEditModal />
 
-    <div class="h-screen flex w-full relative " :class="{'blur-xs':tweetsidebtn || edit ||ShowAreYouSure}">
+    <div class="h-screen flex w-full relative " :class="{'blur-xs':tweetsidebtn || edit ||ShowAreYouSure ||openEditProfile}">
         <Sidebarlayout />
 
         <slot />

@@ -54,11 +54,12 @@ class TweetController extends Controller
 
     public function create()
     {
+
         $attributes = request()->validate([
             'text' => 'required|min:3',
         ]);
         if (auth()->check()) {
-            $attributes['user_id'] = Auth::id();
+            $attributes['user_id'] = Auth::id();    
             if (request()->file('image')) {
                 $uploadedImage = request()->file('image')->storeOnCloudinary();
                 $attributes['image'] = $uploadedImage->getSecurePath();
@@ -83,7 +84,6 @@ class TweetController extends Controller
             'text' => 'required|min:3',
           
         ]);
-    
         if (auth()->check() && $tweet->user->id === auth()->id()) {
             if (request('image')) {
                 $uploadedImage = request('image')->storeOnCloudinary();

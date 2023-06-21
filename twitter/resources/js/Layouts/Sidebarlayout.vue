@@ -76,8 +76,8 @@ const VisitProfile = (username) => {
         <button class="flex items-center" @click="dropdown = !dropdown">
 
           <img
-          src="https://res.cloudinary.com/ddrivhxfq/image/upload/v1687330227/Screenshot_91_g4j2oa.png"
-            class="w-12 h-12 border border-gray-800 rounded-full" alt="" />
+          :src="user.profile"
+          class="w-12 h-12 border border-gray-800 rounded-full" alt="" />
           <div class="hidden lg:block ml-4">
             <p class="text-sm text-white font-bold leading-tight">{{ user.name }}</p>
             <div class="flex">

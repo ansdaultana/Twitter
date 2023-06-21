@@ -16,7 +16,7 @@ defineOptions({
 });
 const isHovered = ref(false);
 const page = usePage();
-const BeingVieweduser = ref(page.props.BeingVieweduser);
+const BeingVieweduser = computed(()=>page.props.BeingVieweduser);
 const tweets = computed(() => page.props.tweets);
 
 const profile = computed(() => page.props.profile);
@@ -85,9 +85,11 @@ const ShowFollower = (username) => {
                     </div>
                 </div>
             </div>
-            <img name="cover" class="z-0 -mb-14 w-full h-56 "
+            <div class="-mb-14 md:w-full h-80 flex justify-center">
+                <img name="cover" class="z-0  max-h-full max-w-full object-contain  "
                 :src='BeingVieweduser.cover'
                 alt="">
+            </div>
             <div class="flex justify-between">
                 <img name="profile"
                     class=" w-32 h-32 ml-4 mb-4 z-10 rounded-full -bottom-1 right-0 border-2 border-white bg-gray-900"

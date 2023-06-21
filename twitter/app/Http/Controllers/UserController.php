@@ -55,7 +55,7 @@ class UserController extends Controller
         return Inertia::render('UserShow', [
             "BeingVieweduser" => $user,
 
-            "admin"=> "ansdaultana",
+            "admin" => "ansdaultana",
             "tweets" => $tweets,
             'users' => $search ? User::query()
                 ->where(function ($query) use ($search) {
@@ -94,7 +94,7 @@ class UserController extends Controller
         return Inertia::render('UserShow', [
             "BeingVieweduser" => $user,
             "tweets" => $tweets,
-            "admin"=> "ansdaultana",
+            "admin" => "ansdaultana",
             'users' => $search ? User::query()
                 ->where(function ($query) use ($search) {
                     $query->where('name', 'like', '%' . $search . '%')
@@ -144,13 +144,13 @@ class UserController extends Controller
             $user['isHovered'] = false;
             return $user;
         });
-      
-        
+
+
         $search = Request::input('search');
         return Inertia::render(
             'Followers',
             [
-            "admin"=> "ansdaultana",
+                "admin" => "ansdaultana",
 
                 'followers' => $followers,
                 "BeingVieweduser" => $user,
@@ -179,7 +179,7 @@ class UserController extends Controller
         return Inertia::render(
             'Following',
             [
-            "admin"=> "ansdaultana",
+                "admin" => "ansdaultana",
 
                 'following' => $following,
                 "BeingVieweduser" => $user,
@@ -196,4 +196,25 @@ class UserController extends Controller
             ]
         );
     }
+
+
+    public function updateprofile(User $user)
+    {
+        $attributes = request()->validate([
+            'name' => 'string|min:3',
+        ]);
+        if (auth()->check() && $user->id === auth()->id()) {
+            if (request()->hasFile('profile')) {
+                $uploadedProfile = request('profile')->storeOnCloudinary();
+                $user->profile = $uploadedProfile->getSecurePath();
+            }
+            if (request()->hasFile('cover')) {
+                $uploadedCover = request('cover')->storeOnCloudinary();
+                $user->cover = $uploadedCover->getSecurePath();
+            }
+            $user->name = request('name');
+            $user->save();
+        }
+    }
+
 }

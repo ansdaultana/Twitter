@@ -42,6 +42,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/{user:username}/tweets/{tweet:id}',[TweetController::class,'show']);
 
     Route::post('/replytweet/{tweet:id}',[TweetController::class,'addReply']);
+    Route::post('/updateprofile/{user:id}',[UserController::class,'updateprofile']);
+
 
 
 });

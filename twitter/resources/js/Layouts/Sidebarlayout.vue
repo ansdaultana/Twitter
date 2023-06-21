@@ -25,6 +25,11 @@ const goToHome = () => {
   router.get('/home');
 }
 
+
+
+const goToExplore = () => {
+  router.get('/explore');
+}
 const VisitProfile = (username) => {
   if (window.location.pathname !== `/${username}`) {
   
@@ -47,7 +52,16 @@ const VisitProfile = (username) => {
       <div name="sidemenubuttons" class="mb-3 lg:ml-3">
         <!-- Sidebar menu items -->
         <MenuItem iconString="Home"  @click="goToHome"/>
-        <MenuItem iconString="Explore" />
+        <button 
+        @click.stop="goToExplore"
+        class="text-white text-lg flex p-2 px-4 lg:pr-6  hover:bg-[#181818] font-bold  w-full  rounded-full cursor-pointer transition duration-200 ease-in-out">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-zinc font-bold">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
+         <div class="ml-2 hidden lg:block">
+          Search
+         </div> 
+        </button>
         <MenuItem iconString="Notifications" />
         <MenuItem iconString="Messages" />
         <MenuItem iconString="Profile" @click="VisitProfile(user.username)" />

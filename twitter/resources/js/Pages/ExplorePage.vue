@@ -4,12 +4,12 @@ import { router, usePage } from '@inertiajs/vue3';
 import { ref, watch, computed, watchEffect } from 'vue';
 import { onMounted, } from 'vue';
 import Bluetick from '@/Components/Bluetick.vue'
+import TwitterLayout from '@/Layouts/TwitterLayout.vue';
 
 const page = usePage();
 const users = computed(() => page.props.users);
 let currentPath = ref(window.location.pathname);
 let searchValue = ref('');
-let explorepage=(window.location.pathname==='/explore')
 const checkWindowLocation = () => {
     //if new location is /users/username and old loc is '/' then currentpath.val will be /users/username
     const newLocation = window.location.pathname;
@@ -18,6 +18,11 @@ const checkWindowLocation = () => {
         searchValue.value = '';
     }
 };
+
+
+defineOptions({
+    layout: TwitterLayout,
+});
 onMounted(() => {
     setInterval(checkWindowLocation, 100);
 });
@@ -37,7 +42,6 @@ let trending = [
     { top: 'Trending', title: 'When Beyonce', bottom: '25.4k tweets' },
 ];
 
-
 let friends = [
     {
         src: "https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
@@ -46,19 +50,33 @@ let friends = [
     {
         src: "https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
         , name: 'Kevin Hart', handle: '@miniRock'
-    }
+    },  {
+        src: "https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
+        , name: 'Adrian Monk', handle: '@detective:)'
+    },
+    {
+        src: "https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
+        , name: 'Kevin Hart', handle: '@miniRock'
+    },
 ];
 </script>
 
 <template>
-    <div name="feed" class="md:block border-l border-gray-800 hidden w-1/3 h-full py-2 px-6 relative">
-        <input v-if="!explorepage" v-model="searchValue" class=" pl-12  rounded-full w-80 p-2 text-white bg-[#181818] text-sm"
+    <div name="feed" class="  border-gray-800  py-2 px-6 relative 
+    
+ h-full bg-black overflow-y-scroll  scrollbar-hide
+    lg:w-1/2 w-full ">
+
+        <input v-model="searchValue" class=" pl-12 mt-5 rounded-full w-full p-2 text-white bg-[#181818] text-sm"
             placeholder="Search Twitter" />
-        <div v-if="searchValue !== '' && !explorepage" name="search"
+
+        <div 
+        v-if="searchValue!==''"
+         name="search"
             class="
             ring-2 
             ring-offset-gray-400
-            max-h-96 w-80 rounded-lg bg-[#181818] border-l border-r border-b mb-2  overflow-y-scroll scrollbar-hide ">
+            max-h-96 w-full rounded-lg bg-[#181818] border-l border-r border-b mb-2  overflow-y-scroll scrollbar-hide ">
 
             <div class=" p-3">
                 <p class="text-lg font-bold text-[#48C9B0]">Results</p>
@@ -88,15 +106,15 @@ let friends = [
             </button>
 
         </div>
-        <div v-if="searchValue === '' && !explorepage" name="tags" class="
-        w-80 rounded-lg border mt-4 border-gray-800 bg-[#181818]">
+        <div  name="tags" class="
+        w-full rounded-lg border mt-4 border-gray-800 bg-[#181818]">
             <div class="flex items-center justify-between p-3">
                 <p class="text-lg text-[#48C9B0] font-bold">Trends for You</p>
                 <i class="fas fa-cog text-lg text-blue"></i>
             </div>
 
             <button v-for="trend in trending"
-                class="w-80 flex justify-between hover:bg-[#2F2F2F] p-3 cursor-pointer transition duration-200 ease-in-out">
+                class="w-full flex justify-between hover:bg-[#2F2F2F] p-3 cursor-pointer transition duration-200 ease-in-out">
                 <div>
                     <p class="text-xs text-left leading-tight text-dark"> {{ trend.top }} </p>
                     <p class="font-semibold text-white  text-sm text-left leading-tight"> {{ trend.title }} </p>
@@ -113,7 +131,7 @@ let friends = [
                 Show More
             </button>
         </div>
-        <div  class="w-80 rounded-lg bg-[#181818] border mb-2 border-gray-800 my-4">
+        <div class="w-full  rounded-lg bg-[#181818] border mb-2 border-gray-800 my-4">
             <div class=" p-3">
                 <p class="text-lg font-bold text-[#48C9B0]">Who to Follow</p>
             </div>
@@ -132,7 +150,7 @@ let friends = [
                 Show More
             </button>
         </div>
-    </div>
+</div>
 </template>
 <style>
 body {

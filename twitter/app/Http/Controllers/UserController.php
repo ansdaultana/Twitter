@@ -140,7 +140,7 @@ class UserController extends Controller
     {
         $followers = $user->followers()->latest()->get()->map(function ($user) {
             $user['isFollowing'] = $this->isFollowing($user->username);
-            $user['profile'] = auth()->user()->username === $user->username;
+            $user['isprofile'] = auth()->user()->username === $user->username;
             $user['isHovered'] = false;
             return $user;
         });
@@ -171,7 +171,7 @@ class UserController extends Controller
         $search = Request::input('search');
         $following = $user->following()->latest()->get()->map(function ($user) {
             $user['isFollowing'] = $this->isFollowing($user->username);
-            $user['profile'] = auth()->user()->username === $user->username;
+            $user['isprofile'] = auth()->user()->username === $user->username;
             $user['isHovered'] = false;
 
             return $user;

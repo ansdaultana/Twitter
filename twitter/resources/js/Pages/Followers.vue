@@ -79,8 +79,10 @@ const followOrUnfollow = async (follower) => {
         <div  v-for="follower in followers" :key="follower.id" @click="navigateToUser(follower)"
             class="cursor-pointer transition duration-200 ease-in-out w-full flex justify-between hover:bg-gray-800  ml-4  p-3 ">
             <div class="flex ">
-                <img src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
-                    class="w-12 h-12 rounded-full border border-lighter" />
+                <img
+            :src="follower.profile"
+                
+                class="w-12 h-12 rounded-full border border-lighter" />
                 <div class=" lg:block ml-4 ">
                     <div class="flex">
                         <p class="text-md mt-1 font-bold leading-tight text-white "> {{ follower.name }} </p>
@@ -103,7 +105,7 @@ const followOrUnfollow = async (follower) => {
                 </div>
             </div>
 
-            <div v-if="follower.profile === false">
+            <div v-if="follower.isprofile === false">
                 <button @click="followOrUnfollow(follower); $event.stopPropagation()" class=" mr-4" @mouseenter="follower.isHovered = true"
                     @mouseleave="follower.isHovered = false">
                     <div v-if="follower.isFollowing"

@@ -26,21 +26,19 @@ Route::get('/register', [UserController::class, 'new']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/home', [TweetController::class, 'index']);
+    Route::get('/explore', [TweetController::class, 'explore']);
 
     Route::get('/users/{user:username}', [UserController::class, 'show'])->name('user.show');
     Route::get('/{user:username}', [UserController::class, 'index'])->name('user.index');
 
     Route::get('/{user:username}/follower', [UserController::class, 'showfollower'])->name('userfollowers');
     Route::get('/{user:username}/following', [UserController::class, 'showfollowing'])->name('userfollowing');
-
-
     Route::post('/createtweet', [TweetController::class, 'create'])->name('tweet.create');
     Route::post('/users/{user:username}/follow', [UserController::class, 'follow'])->name('user.follow');
     Route::post('/tweets/{tweet:id}/like', [LikeController::class, 'like']);
     Route::post('/edittweet/{tweet:id}', [TweetController::class, 'edit']);
     Route::post('/deletetweet/{tweet:id}', [TweetController::class, 'delete']);
     Route::get('/{user:username}/tweets/{tweet:id}',[TweetController::class,'show']);
-
     Route::post('/replytweet/{tweet:id}',[TweetController::class,'addReply']);
     Route::post('/updateprofile/{user:id}',[UserController::class,'updateprofile']);
 

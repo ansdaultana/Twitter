@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
@@ -12,30 +11,39 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Request;
-use SebastianBergmann\Environment\Console;
 
 class TweetController extends Controller
 {
-
-
     public function index()
     {
         $loggedInUser = auth()->user();
         $search = Request::input('search');
         $followingIds = $loggedInUser->following()->pluck('user_id');
         $Tweets = Tweet::with(['user', 'likes'])
-        ->whereIn('user_id', $followingIds)
-        ->withCount(['likes', 'replies'])
-        ->addSelect([
-            'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
-                ->whereColumn('tweet_id', 'tweets.id')
-                ->where('user_id', $loggedInUser->id)
-                ->limit(1),
-        ])
-        ->whereNull('parent_tweet_id')
-        ->latest()
-        ->get();
-    
+            ->whereIn('user_id', $followingIds)
+            ->withCount(['likes', 'replies'])
+            ->addSelect([
+                'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                    ->whereColumn('tweet_id', 'tweets.id')
+                    ->where('user_id', $loggedInUser->id)
+                    ->limit(1),
+            ])
+            ->whereNull('parent_tweet_id')
+            ->latest()
+            ->get();
+        $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
+            $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
+        })
+            ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
+            ->where('id', '!=', $loggedInUser->id)
+            ->take(2)
+            ->get();
+
+        $mutualFollowing = $mutualFollowing->map(function ($user) {
+            $user->is_following = false;
+            return $user;
+        });
+
         return Inertia::render('Feed', [
             'users' => $search ? User::query()
                 ->where(function ($query) use ($search) {
@@ -46,8 +54,8 @@ class TweetController extends Controller
                 ->limit(20)
                 ->get() : [],
             'tweets' => $Tweets,
-            "admin"=> "ansdaultana",
-
+            "admin" => "ansdaultana",
+            "mutualFollowing" => $mutualFollowing,
 
         ]);
     }
@@ -58,18 +66,33 @@ class TweetController extends Controller
         $search = Request::input('search');
         $followingIds = $loggedInUser->following()->pluck('user_id');
         $Tweets = Tweet::with(['user', 'likes'])
-        ->whereIn('user_id', $followingIds)
-        ->withCount(['likes', 'replies'])
-        ->addSelect([
-            'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
-                ->whereColumn('tweet_id', 'tweets.id')
-                ->where('user_id', $loggedInUser->id)
-                ->limit(1),
-        ])
-        ->whereNull('parent_tweet_id')
-        ->latest()
-        ->get();
-    
+            ->whereIn('user_id', $followingIds)
+            ->withCount(['likes', 'replies'])
+            ->addSelect([
+                'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                    ->whereColumn('tweet_id', 'tweets.id')
+                    ->where('user_id', $loggedInUser->id)
+                    ->limit(1),
+            ])
+            ->whereNull('parent_tweet_id')
+            ->latest()
+            ->get();
+        $loggedInUser = auth()->user();
+
+
+        $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
+            $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
+        })
+            ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
+            ->where('id', '!=', $loggedInUser->id)
+            ->take(10)
+            ->get();
+
+        $mutualFollowing = $mutualFollowing->map(function ($user) {
+            $user->is_following = false;
+            return $user;
+        });
+
         return Inertia::render('ExplorePage', [
             'users' => $search ? User::query()
                 ->where(function ($query) use ($search) {
@@ -80,9 +103,8 @@ class TweetController extends Controller
                 ->limit(20)
                 ->get() : [],
             'tweets' => $Tweets,
-            "admin"=> "ansdaultana",
-
-
+            "admin" => "ansdaultana",
+            "mutualFollowing" => $mutualFollowing,
         ]);
     }
     public function create()
@@ -92,19 +114,17 @@ class TweetController extends Controller
             'text' => 'required|min:3',
         ]);
         if (auth()->check()) {
-            $attributes['user_id'] = Auth::id();    
+            $attributes['user_id'] = Auth::id();
             if (request()->file('image')) {
                 $uploadedImage = request()->file('image')->storeOnCloudinary();
                 $attributes['image'] = $uploadedImage->getSecurePath();
-            }
-            else if(request()->file('video')) 
-            {
+            } else if (request()->file('video')) {
 
                 $uploadedVideo = request()->file('video')->storeOnCloudinary();
                 $attributes['video'] = $uploadedVideo->getSecurePath();
-            
+
             }
-           Tweet::create($attributes);
+            Tweet::create($attributes);
         } else {
 
             abort(403);
@@ -115,18 +135,18 @@ class TweetController extends Controller
     {
         $attributes = request()->validate([
             'text' => 'required|min:3',
-          
+
         ]);
         if (auth()->check() && $tweet->user->id === auth()->id()) {
             if (request('image')) {
                 $uploadedImage = request('image')->storeOnCloudinary();
                 $attributes['image'] = $uploadedImage->getSecurePath();
-                $attributes['video'] =null;
+                $attributes['video'] = null;
 
             } else if (request('video')) {
                 $uploadedVideo = request('video')->storeOnCloudinary();
                 $attributes['video'] = $uploadedVideo->getSecurePath();
-                $attributes['image'] =null;
+                $attributes['image'] = null;
 
             }
             $tweet->update($attributes);
@@ -134,7 +154,7 @@ class TweetController extends Controller
             abort(403);
         }
     }
-    
+
     public function delete(Tweet $tweet)
     {
 
@@ -160,13 +180,11 @@ class TweetController extends Controller
             if (request()->file('image')) {
                 $uploadedImage = request()->file('image')->storeOnCloudinary();
                 $attributes['image'] = $uploadedImage->getSecurePath();
-            
-            }
-            else if (request()->file('video'))
-            {
+
+            } else if (request()->file('video')) {
                 $uploadedVideo = request()->file('video')->storeOnCloudinary();
                 $attributes['video'] = $uploadedVideo->getSecurePath();
-            
+
             }
             Tweet::create($attributes);
         } else {
@@ -208,7 +226,7 @@ class TweetController extends Controller
                 'replies' => $replies,
                 'authUser' => $loggedInUser,
                 'isLiked' => $loggedInUser->likes->where('tweet_id', $tweet->id)->count() > 0,
-            "admin"=> "ansdaultana",
+                "admin" => "ansdaultana",
 
             ]
         );

@@ -59,9 +59,7 @@ const followOrUnfollow = async (following) => {
 
                     </button>
                     <div>
-                        <h1 class="text-xl text-white ml-3 font-bold">{{ BeingVieweduser.name }}</h1>
-                        <h3 class="text-md text-gray-400 ml-3 ">1.1k tweets</h3>
-
+                        <h1 class="text-xl text-white ml-3 mb-4 font-bold">{{ BeingVieweduser.name }}</h1>
                     </div>
                 </div>
             </div>

@@ -46,27 +46,13 @@ class User extends Authenticatable
 
     public function isAdmin()
     {
-        return $this->email==="ansdaultana.ad5@gmail.com";
+        return $this->email === "ansdaultana.ad5@gmail.com";
     }
     public function AdminUsername()
     {
         return "ansdaultana";
     }
-    public function getAvatar()
-    {
-        $firstCharacter = $this->email[0];
-        if (is_numeric($firstCharacter)) {
-            $integerToUse = ord(strtolower($firstCharacter)) - 21;
-        } else {
-            $integerToUse = ord(strtolower($firstCharacter)) - 96;
-        }
-        return 'https://www.gravatar.com/avatar/'
-            .md5($this->email)
-            .'?s=200'
-            .'&d=https://s3.amazonaws.com/laracasts/images/forum/avatars/default-avatar-'
-            .$integerToUse
-            .'.png';
-    }
+
     public function tweets()
     {
         return $this->hasMany(Tweet::class);
@@ -75,7 +61,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Like::class);
     }
-    
+
     public function followers()
     {
         return $this->belongsToMany(User::class, 'followers', 'user_id', 'follower_id');
@@ -87,11 +73,13 @@ class User extends Authenticatable
     public function isFollowing($username)
     {
         $AmIFollowingThisUser = User::where('username', $username)->first();
-    
+
         if ($AmIFollowingThisUser && $this->followings()->where('user_id', $AmIFollowingThisUser->id)->exists()) {
             return true;
         }
         return false;
     }
+
+
 
 }

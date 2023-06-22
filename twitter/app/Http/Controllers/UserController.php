@@ -34,6 +34,7 @@ class UserController extends Controller
 
     public function show(User $user)
     {
+        $loggedInUser = auth()->user();
 
         $search = Request::input('search');
         $tweets = Tweet::with('user')
@@ -52,8 +53,22 @@ class UserController extends Controller
 
         $followerCount = $user->followers()->count();
         $followingCount = $user->following()->count();
+        $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
+    $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
+})
+    ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
+    ->where('id', '!=', $loggedInUser->id)
+    ->take(2)
+    ->get();
+
+$mutualFollowing = $mutualFollowing->map(function ($user) {
+    $user->is_following = false;
+    return $user;
+});
+
         return Inertia::render('UserShow', [
             "BeingVieweduser" => $user,
+            "mutualFollowing" => $mutualFollowing,
 
             "admin" => "ansdaultana",
             "tweets" => $tweets,
@@ -74,6 +89,8 @@ class UserController extends Controller
 
     public function index(User $user)
     {
+        $loggedInUser = auth()->user();
+
         $search = Request::input('search');
         $tweets = Tweet::with('user')
             ->where('user_id', $user->id)
@@ -90,9 +107,22 @@ class UserController extends Controller
             ->get();
         $followerCount = $user->followers()->count();
         $followingCount = $user->following()->count();
+        $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
+    $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
+})
+    ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
+    ->where('id', '!=', $loggedInUser->id)
+    ->take(2)
+    ->get();
+
+$mutualFollowing = $mutualFollowing->map(function ($user) {
+    $user->is_following = false;
+    return $user;
+});
 
         return Inertia::render('UserShow', [
             "BeingVieweduser" => $user,
+            "mutualFollowing" => $mutualFollowing,
             "tweets" => $tweets,
             "admin" => "ansdaultana",
             'users' => $search ? User::query()
@@ -145,12 +175,27 @@ class UserController extends Controller
             return $user;
         });
 
+        $loggedInUser = auth()->user();
 
         $search = Request::input('search');
+        $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
+    $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
+})
+    ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
+    ->where('id', '!=', $loggedInUser->id)
+    ->take(2)
+    ->get();
+
+$mutualFollowing = $mutualFollowing->map(function ($user) {
+    $user->is_following = false;
+    return $user;
+});
+
         return Inertia::render(
             'Followers',
             [
                 "admin" => "ansdaultana",
+                "mutualFollowing" => $mutualFollowing,
 
                 'followers' => $followers,
                 "BeingVieweduser" => $user,
@@ -168,6 +213,8 @@ class UserController extends Controller
     }
     public function showfollowing(User $user)
     {
+        $loggedInUser = auth()->user();
+
         $search = Request::input('search');
         $following = $user->following()->latest()->get()->map(function ($user) {
             $user['isFollowing'] = $this->isFollowing($user->username);
@@ -176,11 +223,26 @@ class UserController extends Controller
 
             return $user;
         });
+        $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
+    $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
+})
+    ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
+    ->where('id', '!=', $loggedInUser->id)
+    ->take(2)
+    ->get();
+
+$mutualFollowing = $mutualFollowing->map(function ($user) {
+    $user->is_following = false;
+    return $user;
+});
+
         return Inertia::render(
+            
             'Following',
             [
-                "admin" => "ansdaultana",
+            "mutualFollowing" => $mutualFollowing,
 
+                "admin" => "ansdaultana",
                 'following' => $following,
                 "BeingVieweduser" => $user,
                 'users' => $search ? User::query()

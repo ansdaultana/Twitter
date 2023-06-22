@@ -7,6 +7,9 @@ import Bluetick from '@/Components/Bluetick.vue'
 import TwitterLayout from '@/Layouts/TwitterLayout.vue';
 
 const page = usePage();
+const mutualFollowing = computed(() => page.props.mutualFollowing);
+const Authuser = computed(() => page.props.auth.user);
+
 const users = computed(() => page.props.users);
 let currentPath = ref(window.location.pathname);
 let searchValue = ref('');
@@ -42,23 +45,19 @@ let trending = [
     { top: 'Trending', title: 'When Beyonce', bottom: '25.4k tweets' },
 ];
 
-let friends = [
-    {
-        src: "https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
-        , name: 'Adrian Monk', handle: '@detective:)'
-    },
-    {
-        src: "https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
-        , name: 'Kevin Hart', handle: '@miniRock'
-    },  {
-        src: "https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
-        , name: 'Adrian Monk', handle: '@detective:)'
-    },
-    {
-        src: "https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
-        , name: 'Kevin Hart', handle: '@miniRock'
-    },
-];
+
+
+const followOrUnfollow = async (user) => {
+
+try {
+    const response = await axios.post(`/users/${user.username}/follow`)
+    user.is_following = response.data.isFollowing;
+    
+} catch (error) {
+    console.log(error)
+}
+}
+
 </script>
 
 <template>
@@ -131,24 +130,45 @@ let friends = [
                 Show More
             </button>
         </div>
-        <div class="w-full  rounded-lg bg-[#181818] border mb-2 border-gray-800 my-4">
+        <div class="w-full md:hidden  rounded-lg bg-[#181818] border mb-2 border-gray-800 my-4">
             <div class=" p-3">
                 <p class="text-lg font-bold text-[#48C9B0]">Who to Follow</p>
             </div>
-            <button v-for="friend in friends"
-                class="cursor-pointer transition duration-200 ease-in-out w-full flex hover:bg-[#2F2F2F]   p-3 ">
-                <img :src="`${friend.src}`" class="w-12 h-12 rounded-full border border-lighter" />
-                <div class=" ml-4">
-                    <p class="text-sm font-bold leading-tight text-white"> {{ friend.name }} </p>
-                    <p class="text-sm leading-tight text-gray-500"> {{ friend.handle }} </p>
+            <div v-if="mutualFollowing.length>0">
+
+                <div v-for="mutual in mutualFollowing">
+    
+                    <button v-if="mutual.id !== Authuser.id"
+                    class="cursor-pointer transition duration-200 ease-in-out w-full flex justify-between hover:bg-[#2F2F2F]   p-3 ">
+                    <div class="flex">
+
+                    <img :src="mutual.profile" class="w-12 h-12 rounded-full border border-lighter" />
+                    <div class=" ml-4">
+                        <p class="text-sm font-bold leading-tight w-auto text-white"> {{ mutual.name }} </p>
+                        <p class="text-sm leading-tight text-gray-500"> {{ mutual.username }} </p>
+                    </div>
                 </div>
-                <button class="ml-auto text-sm text-[#48C9B0] py-1 px-4 rounded-full border-2 border-[#48C9B0]">
-                    Follow
+
+
+                    <button @click="followOrUnfollow(mutual)"  @mouseenter="isHovered = true"
+                    @mouseleave="isHovered = false">
+                    <div v-if="mutual.is_following"
+                        class=" mr-4 text-sm text-[#48C9B0] py-1 px-4 rounded-full border-2 hover:text-red-800 hover:bg-red-400 hover:border-red-800 border-[#48C9B0]">
+                        {{ !isHovered ? 'Following' : 'Unfollow' }}
+
+                    </div>
+                    <div v-if="!mutual.is_following"
+                        class=" mr-4 text-sm text-[#48C9B0] py-1 px-4 rounded-full border-2 hover:text-black hover:bg-[#48C9B0] border-[#48C9B0]">
+                        follow
+                    </div>
                 </button>
-            </button>
-            <button class="p-3 w-full hover:bg-[#2F2F2F] text-left text-[#48C9B0] ">
-                Show More
-            </button>
+
+
+                  
+                </button>
+                </div>
+            </div>
+          
         </div>
 </div>
 </template>

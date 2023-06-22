@@ -11,7 +11,6 @@ defineOptions({
 const page = usePage();
 const BeingVieweduser = ref(page.props.BeingVieweduser);
 const authUser = computed(() => page.props.auth.user);
-
 const followers = computed(() => page.props.followers);
 const back = () => {
     router.get("/home");
@@ -59,8 +58,7 @@ const followOrUnfollow = async (follower) => {
 
                     </button>
                     <div>
-                        <h1 class="text-xl text-white ml-3 font-bold">{{ BeingVieweduser.name }}</h1>
-                        <h3 class="text-md text-gray-400 ml-3 ">1.1k tweets</h3>
+                        <h1 class="text-xl text-white ml-3 mb-4 font-bold">{{ BeingVieweduser.name }}</h1>
 
                     </div>
                 </div>
@@ -76,18 +74,15 @@ const followOrUnfollow = async (follower) => {
                 Following
             </button>
         </div>
-        <div  v-for="follower in followers" :key="follower.id" @click="navigateToUser(follower)"
+        <div v-for="follower in followers" :key="follower.id" @click="navigateToUser(follower)"
             class="cursor-pointer transition duration-200 ease-in-out w-full flex justify-between hover:bg-gray-800  ml-4  p-3 ">
             <div class="flex ">
-                <img
-            :src="follower.profile"
-                
-                class="w-12 h-12 rounded-full border border-lighter" />
+                <img :src="follower.profile" class="w-12 h-12 rounded-full border border-lighter" />
                 <div class=" lg:block ml-4 ">
                     <div class="flex">
                         <p class="text-md mt-1 font-bold leading-tight text-white "> {{ follower.name }} </p>
                         <Bluetick :username="follower.username" />
-    
+
                     </div>
 
                     <div class="flex ">
@@ -106,8 +101,8 @@ const followOrUnfollow = async (follower) => {
             </div>
 
             <div v-if="follower.isprofile === false">
-                <button @click="followOrUnfollow(follower); $event.stopPropagation()" class=" mr-4" @mouseenter="follower.isHovered = true"
-                    @mouseleave="follower.isHovered = false">
+                <button @click="followOrUnfollow(follower); $event.stopPropagation()" class=" mr-4"
+                    @mouseenter="follower.isHovered = true" @mouseleave="follower.isHovered = false">
                     <div v-if="follower.isFollowing"
                         class=" text-sm text-[#48C9B0] py-1 px-4 rounded-full border-2 hover:text-red-800 hover:bg-red-400 hover:border-red-800 border-[#48C9B0]">
                         {{ !follower.isHovered ? 'Following' : 'Unfollow' }}

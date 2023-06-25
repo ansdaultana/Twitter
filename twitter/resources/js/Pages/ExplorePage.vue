@@ -111,7 +111,6 @@ try {
                 <p class="text-lg text-[#48C9B0] font-bold">Trends for You</p>
                 <i class="fas fa-cog text-lg text-blue"></i>
             </div>
-
             <button v-for="trend in trending"
                 class="w-full flex justify-between hover:bg-[#2F2F2F] p-3 cursor-pointer transition duration-200 ease-in-out">
                 <div>
@@ -130,11 +129,11 @@ try {
                 Show More
             </button>
         </div>
-        <div class="w-full md:hidden  rounded-lg bg-[#181818] border mb-2 border-gray-800 my-4">
+        <div class="w-full md:hidden  rounded-lg bg-[#181818] border mb-2 border-gray-800 my-4" v-if="mutualFollowing.length>0">
             <div class=" p-3">
                 <p class="text-lg font-bold text-[#48C9B0]">Who to Follow</p>
             </div>
-            <div v-if="mutualFollowing.length>0">
+            <div >
 
                 <div v-for="mutual in mutualFollowing">
     
@@ -144,8 +143,8 @@ try {
 
                     <img :src="mutual.profile" class="w-12 h-12 rounded-full border border-lighter" />
                     <div class=" ml-4">
-                        <p class="text-sm font-bold leading-tight w-auto text-white"> {{ mutual.name }} </p>
-                        <p class="text-sm leading-tight text-gray-500"> {{ mutual.username }} </p>
+                        <p class="hidden md:block  text-sm font-bold leading-tight w-auto text-white"> {{ mutual.name }} </p>
+                        <p class=" hidden md:block text-sm  leading-tight text-gray-500"> {{ mutual.username }} </p>
                     </div>
                 </div>
 

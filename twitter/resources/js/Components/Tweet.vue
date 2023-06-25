@@ -131,8 +131,16 @@ const Retweet = async (tweet) => {
 
 
 <template>
+    <div v-if="props.tweet.retweetedBy" class="text-gray-600 ml-10 m-1 flex ">
+        <svg  fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5]4 mr-3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" />
+          </svg>
+          
+      {{ props.tweet.retweetedBy }} Retweeted
+    </div>
     <div class="w-full p-4 border-b border-gray-800 hover:bg-[#181818] flex cursor-pointer transition duration-200 ease-in-out"
         :class="{ 'hover:bg-black': Menu }" @click="GoToTweet(props.tweet.user.username, props.tweet.id)">
+        
         <div class="lg:flex-none hidden md:block mr-4">
             <div class="flex items-center" @click.stop="GoToUserPage(props.tweet.user.username)">
 
@@ -141,16 +149,16 @@ const Retweet = async (tweet) => {
         </div>
         <div class="w-full relative">
             <div class="flex items-center md:justify-between w-full">
-                <div class="md:hidden flex items-center mr-2" @click.stop="GoToUserPage(props.tweet.user.username)">
+                <div class="md:hidden flex items-center md:mr-2 w-16" @click.stop="GoToUserPage(props.tweet.user.username)">
 
                     <img :src='props.tweet.user.profile' class="h-12 w-12 rounded-full flex-none" />
                 </div>
 
                 <div class="flex items-center" @click.stop="GoToUserPage(props.tweet.user.username)">
-                    <p class="font-semibold text-white"> {{ props.tweet.user.name }} </p>
+                    <p class="font-semibold text-white "> {{ props.tweet.user.name }} </p>
                     <Bluetick :username="props.tweet.user.username" />
 
-                    <p class="text-sm text-dark ml-2"> @{{ props.tweet.user.username }} </p>
+                    <p class="text-sm text-dark ml-2 hidden lg:block "> @{{ props.tweet.user.username }} </p>
                     <div class="hidden lg:block text-sm text-dark ml-2">&bull;</div>
                     <p class="  hidden lg:block text-sm text-dark ml-1"> {{ formatCreatedAt(props.tweet.created_at) }} </p>
                 </div>
@@ -171,10 +179,10 @@ const Retweet = async (tweet) => {
                 {{ tweet.text }}
             </p>
             <div v-if="tweet.image" class="flex justify-center">
-                <img :src='tweet.image' class=" max-h-500 max-w-500 rounded-xl w-96">
+                <img :src='tweet.image' class=" max-h-500 max-w-500 rounded-xl w-56 md:w-96">
             </div>
             <div v-if="tweet.video" class="flex justify-center">
-                <video :src="tweet.video" controls class=" max-h-500 max-w-500 rounded-xl " />
+                <video :src="tweet.video" controls class=" max-h-500 max-w-500 rounded-xl w-56 md:w-96" />
 
             </div>
             <div class="flex items-center justify-between w-full">
@@ -223,7 +231,7 @@ const Retweet = async (tweet) => {
             <div class="flex justify-end">
                 <div v-if="Menu === true" class="absolute top-12 right-6     mt-[-20px] mr-4 z-10">
                     <div
-                        class="w-60 border-2 bg-black rounded-lg border-gray-400 flex flex-col hover:scale-105 transition-transform ease-in-out">
+                        class="md:w-60 w-48 border-2 bg-black rounded-lg border-gray-400 flex flex-col hover:scale-105 transition-transform ease-in-out">
 
                         <button v-if="ForAnyView(props.tweet.user.username)"
                             @click.stop="IsUserSure(props.tweet.user.username, 'unfollow')"

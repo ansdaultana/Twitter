@@ -20,22 +20,35 @@ class TweetController extends Controller
         $loggedInUser = auth()->user();
         $search = Request::input('search');
         $followingIds = $loggedInUser->following()->pluck('user_id');
-        $Tweets = Tweet::with(['user', 'likes'])
-            ->whereIn('user_id', $followingIds)
-            ->withCount(['likes', 'replies','retweets'])
-            ->addSelect([
-                'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
-                    ->whereColumn('tweet_id', 'tweets.id')
-                    ->where('user_id', $loggedInUser->id)
-                    ->limit(1),
-                    'isReTweeted' => Retweet::selectRaw('IF(COUNT(id) > 0, 1, 0)')
-                    ->whereColumn('tweet_id', 'tweets.id')
-                    ->where('user_id', $loggedInUser->id)
-                    ->limit(1),
-            ])
-            ->whereNull('parent_tweet_id')
-            ->latest()
-            ->get();
+
+        $allTweets = Tweet::with(['user', 'likes'])
+        ->where(function ($query) use ($followingIds) {
+            $query->whereIn('user_id', $followingIds)
+                ->orWhereIn('id', function ($query) use ($followingIds) {
+                    $query->select('tweet_id')
+                        ->from('retweets')
+                        ->whereIn('user_id', $followingIds);
+                });
+        })
+        ->whereNull('parent_tweet_id')
+        ->withCount(['likes', 'replies', 'retweets'])
+        ->addSelect([
+            'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                ->whereColumn('tweet_id', 'tweets.id')
+                ->where('user_id', $loggedInUser->id)
+                ->limit(1),
+            'isReTweeted' => Retweet::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                ->whereColumn('tweet_id', 'tweets.id')
+                ->where('user_id', $loggedInUser->id)
+                ->limit(1),
+            'retweetedBy' =>  Retweet::select('name') // Change 'user_id' to 'name'
+            ->join('users', 'retweets.user_id', '=', 'users.id')
+            ->whereColumn('tweet_id', 'tweets.id')
+            ->limit(1),
+        ])
+        ->latest()
+        ->get();
+       
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
             $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
         })
@@ -58,7 +71,7 @@ class TweetController extends Controller
                 ->where('id', '!=', auth()->id())
                 ->limit(20)
                 ->get() : [],
-            'tweets' => $Tweets,
+            'tweets' => $allTweets,
             "admin" => "ansdaultana",
             "mutualFollowing" => $mutualFollowing,
 

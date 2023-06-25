@@ -149,24 +149,22 @@ const formatCreatedAt = (date) => {
             </div>
             <div class="w-full p-4 border-b border-gray-800 hover:bg-[#181818] flex cursor-pointer transition duration-200 ease-in-out"
                 :class="{ 'hover:bg-black': Menu }">
-                <div class="lg:flex-none hidden md:block mr-4">
+                <div class="lg:flex-none hidden md:block mr-4 ">
 
                     <div class="flex items-center" @click.stop="GoToUserPage(user.username)">
 
                         <img 
                 :src='user.profile'
-                        
-                      
-                class="h-12 w-12 rounded-full flex-none" />
+                 class="h-12 w-12 rounded-full flex-none" />
                     </div>
                 </div>
                 <div class="w-full relative">
                     <div class="flex items-center justify-between w-full">
                         <div class="flex items-center" @click.stop="GoToUserPage(user.username)">
-                            <div class="md:hidden flex items-center mr-2">
+                            <div class="md:hidden flex items-center w-16 mr-2">
 
-                                <img src="https://media.licdn.com/dms/image/C4D03AQHySl-ZFgyOfg/profile-displayphoto-shrink_400_400/0/1655959852960?e=1691020800&v=beta&t=YOs9sUi06NTkbFEsNz90qPTtNLRf1lZPaGVyXSXZg9A"
-                                    class="h-12 w-12 rounded-full flex-none" />
+                                <img :src='user.profile'
+                                class="h-12 w-12 rounded-full flex-none" />
                             </div>
                        
                             <p class="font-semibold text-white"> {{ user.name }} </p>
@@ -338,7 +336,7 @@ const formatCreatedAt = (date) => {
                 </div>
             </div>
         </div>
-        <div class="flex mt-7 ml-24">
+        <div class="flex mt-7  ml-4 md:ml-24">
             <div class="text-gray-400 ">Replying to</div>
             <div class="text-blue ml-3 cursor-pointer" 
             @click.stop="GoToUserPage(user.username)"

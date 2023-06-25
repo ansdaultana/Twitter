@@ -173,6 +173,18 @@ const goToExplore = () => {
     <div class=" p-3">
         <p class="text-lg font-bold text-[#48C9B0]">Who to Follow</p>
     </div>
+    <div v-if="mutualFollowing.length===0" >
+        <div class=" p-3">
+          
+            <p class="text-sm font-bold text-[#48C9B0]">You can search Users </p>
+            <p class="text-sm mt-2 font-bold text-[#48C9B0]"> Use Hashtags to Find Users</p>
+            <p class="text-sm mt-2 font-bold text-[#48C9B0]"> Then You'll get recommended users</p>
+
+
+        
+        </div>
+
+    </div>
     <div v-if="mutualFollowing.length>0">
 
     <div v-for="mutual in mutualFollowing">

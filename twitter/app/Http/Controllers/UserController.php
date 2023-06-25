@@ -39,8 +39,7 @@ class UserController extends Controller
         $search = Request::input('search');
         $tweets = Tweet::with('user')
             ->where('user_id', $user->id)
-            ->withCount('likes')
-            ->withCount('replies')
+            ->withCount('likes','retweets','replies')
             ->addSelect([
                 'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
                     ->whereColumn('tweet_id', 'tweets.id')
@@ -54,17 +53,17 @@ class UserController extends Controller
         $followerCount = $user->followers()->count();
         $followingCount = $user->following()->count();
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
-    $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
-})
-    ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
-    ->where('id', '!=', $loggedInUser->id)
-    ->take(2)
-    ->get();
+            $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
+        })
+            ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
+            ->where('id', '!=', $loggedInUser->id)
+            ->take(2)
+            ->get();
 
-$mutualFollowing = $mutualFollowing->map(function ($user) {
-    $user->is_following = false;
-    return $user;
-});
+        $mutualFollowing = $mutualFollowing->map(function ($user) {
+            $user->is_following = false;
+            return $user;
+        });
 
         return Inertia::render('UserShow', [
             "BeingVieweduser" => $user,
@@ -94,8 +93,8 @@ $mutualFollowing = $mutualFollowing->map(function ($user) {
         $search = Request::input('search');
         $tweets = Tweet::with('user')
             ->where('user_id', $user->id)
-            ->withCount('likes')
-            ->withCount('replies')
+            ->withCount('likes','retweets','replies')
+
             ->addSelect([
                 'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
                     ->whereColumn('tweet_id', 'tweets.id')
@@ -103,22 +102,23 @@ $mutualFollowing = $mutualFollowing->map(function ($user) {
                     ->limit(1)
             ])
             ->whereNull('parent_tweet_id')
+            
             ->latest()
             ->get();
         $followerCount = $user->followers()->count();
         $followingCount = $user->following()->count();
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
-    $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
-})
-    ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
-    ->where('id', '!=', $loggedInUser->id)
-    ->take(2)
-    ->get();
+            $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
+        })
+            ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
+            ->where('id', '!=', $loggedInUser->id)
+            ->take(2)
+            ->get();
 
-$mutualFollowing = $mutualFollowing->map(function ($user) {
-    $user->is_following = false;
-    return $user;
-});
+        $mutualFollowing = $mutualFollowing->map(function ($user) {
+            $user->is_following = false;
+            return $user;
+        });
 
         return Inertia::render('UserShow', [
             "BeingVieweduser" => $user,
@@ -179,17 +179,17 @@ $mutualFollowing = $mutualFollowing->map(function ($user) {
 
         $search = Request::input('search');
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
-    $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
-})
-    ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
-    ->where('id', '!=', $loggedInUser->id)
-    ->take(2)
-    ->get();
+            $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
+        })
+            ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
+            ->where('id', '!=', $loggedInUser->id)
+            ->take(2)
+            ->get();
 
-$mutualFollowing = $mutualFollowing->map(function ($user) {
-    $user->is_following = false;
-    return $user;
-});
+        $mutualFollowing = $mutualFollowing->map(function ($user) {
+            $user->is_following = false;
+            return $user;
+        });
 
         return Inertia::render(
             'Followers',
@@ -224,23 +224,23 @@ $mutualFollowing = $mutualFollowing->map(function ($user) {
             return $user;
         });
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
-    $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
-})
-    ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
-    ->where('id', '!=', $loggedInUser->id)
-    ->take(2)
-    ->get();
+            $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
+        })
+            ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
+            ->where('id', '!=', $loggedInUser->id)
+            ->take(2)
+            ->get();
 
-$mutualFollowing = $mutualFollowing->map(function ($user) {
-    $user->is_following = false;
-    return $user;
-});
+        $mutualFollowing = $mutualFollowing->map(function ($user) {
+            $user->is_following = false;
+            return $user;
+        });
 
         return Inertia::render(
-            
+
             'Following',
             [
-            "mutualFollowing" => $mutualFollowing,
+                "mutualFollowing" => $mutualFollowing,
 
                 "admin" => "ansdaultana",
                 'following' => $following,

@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Like;
+use App\Models\Retweet;
 use App\Models\Tweet;
 use App\Http\Requests\StoreTweetRequest;
 use App\Http\Requests\UpdateTweetRequest;
@@ -21,9 +22,13 @@ class TweetController extends Controller
         $followingIds = $loggedInUser->following()->pluck('user_id');
         $Tweets = Tweet::with(['user', 'likes'])
             ->whereIn('user_id', $followingIds)
-            ->withCount(['likes', 'replies'])
+            ->withCount(['likes', 'replies','retweets'])
             ->addSelect([
                 'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                    ->whereColumn('tweet_id', 'tweets.id')
+                    ->where('user_id', $loggedInUser->id)
+                    ->limit(1),
+                    'isReTweeted' => Retweet::selectRaw('IF(COUNT(id) > 0, 1, 0)')
                     ->whereColumn('tweet_id', 'tweets.id')
                     ->where('user_id', $loggedInUser->id)
                     ->limit(1),
@@ -38,13 +43,12 @@ class TweetController extends Controller
             ->where('id', '!=', $loggedInUser->id)
             ->take(2)
             ->get();
-
         $mutualFollowing = $mutualFollowing->map(function ($user) {
             $user->is_following = false;
             return $user;
         });
 
-        
+
         return Inertia::render('Feed', [
             'users' => $search ? User::query()
                 ->where(function ($query) use ($search) {
@@ -195,11 +199,14 @@ class TweetController extends Controller
     public function show(User $user, Tweet $tweet)
     {
         $loggedInUser = auth()->user();
-
         $replies = Tweet::with('user', 'likes')
-            ->withCount('likes')
+            ->withCount('likes','replies','retweets')
             ->addSelect([
                 'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                    ->whereColumn('tweet_id', 'tweets.id')
+                    ->where('user_id', $loggedInUser->id)
+                    ->limit(1),
+                    'isReTweeted' => Retweet::selectRaw('IF(COUNT(id) > 0, 1, 0)')
                     ->whereColumn('tweet_id', 'tweets.id')
                     ->where('user_id', $loggedInUser->id)
                     ->limit(1),
@@ -222,10 +229,12 @@ class TweetController extends Controller
         return Inertia::render(
             'ShowTweet',
             [
-        "mutualFollowing" => $mutualFollowing,
-        'tweet' => $tweet,
+                "mutualFollowing" => $mutualFollowing,
+                'tweet' => $tweet,
                 'user' => $user,
                 'likes_count' => $tweet->likes()->count(),
+                'replies_count' => $tweet->replies()->count(),
+                'retweets_count' => $tweet->retweets()->count(),
                 'users' => $search
                 ? User::query()
                     ->where(function ($query) use ($search) {
@@ -239,6 +248,7 @@ class TweetController extends Controller
                 'replies' => $replies,
                 'authUser' => $loggedInUser,
                 'isLiked' => $loggedInUser->likes->where('tweet_id', $tweet->id)->count() > 0,
+                'isReTweeted' => $loggedInUser->retweets->where('tweet_id', $tweet->id)->count() > 0,
                 "admin" => "ansdaultana",
 
             ]
@@ -247,7 +257,40 @@ class TweetController extends Controller
 
     }
 
-    /**
+    public function retweet(Tweet $tweet)
+    {
+        $loggedInUser = auth()->user();
+    
+        try {
+            $checkTweet = Tweet::findOrFail($tweet->id);
+        } catch (ModelNotFoundException $e) {
+            abort(404, 'Tweet not found');
+        }
+        $isReTweeted= $tweet->retweets()->where([
+            'tweet_id' => $tweet->id,
+            'user_id' => $loggedInUser->id,
+        ])->exists();
+    
+        if ($isReTweeted) {
+            $tweet->retweets()->where([
+                'tweet_id' => $tweet->id,
+                'user_id' => $loggedInUser->id,
+            ])->delete();
+        } else {
+            $retweet = new Retweet([
+                'user_id' => $loggedInUser->id,
+                'tweet_id' => $tweet->id,
+            ]);
+            $retweet->save();
+        }
+        $isReTweeted = !$isReTweeted;
+        $response = [
+            'isReTweeted' => $isReTweeted,
+        ];
+    
+        return response()->json($response);
+    }
+        /**
      * Show the form for editing the specified resource.
      */
 

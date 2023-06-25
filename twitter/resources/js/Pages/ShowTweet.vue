@@ -21,7 +21,10 @@ const user = computed(() => page.props.user);
 const tweet = computed(() => page.props.tweet);
 const replies = computed(() => page.props.replies);
 let isLiked = ref(page.props.isLiked);
+let isReTweeted = ref(page.props.isReTweeted);
 let likes_count = ref(page.props.likes_count);
+let replies_count = ref(page.props.replies_count);
+let retweets_count = ref(page.props.retweets_count);
 const edit = ref(inject('edit'));
 const EditTweet = ref(inject('EditTweet'));
 const AreYouSure = ref(inject('AreYouSure'));
@@ -71,6 +74,23 @@ const LikeTheTweet = async (tweet) => {
     } catch (error) {
         console.log(error);
     }
+
+}
+const Retweet = async (tweet) => {
+    
+try {
+    const response = await axios.post(`/retweet/${tweet.id}`)
+    isReTweeted.value = response.data.isReTweeted;
+    if (isReTweeted.value === true) {
+       retweets_count.value++;
+    }
+    else {
+        retweets_count.value--;
+    }
+} catch (error) {
+    console.log(error)
+
+}
 
 }
 const OpenEditModal = (tweet) => {
@@ -181,8 +201,10 @@ const formatCreatedAt = (date) => {
                         <div class="flex items-center text-sm text-dark">
                             <div class="flex justify-center items-center cursor-pointer">
 
-                                <MessageOutline class="hover:bg-blue mt-1  p-2 rounded-full" fillColor="blue" size=12 />
-                                <span class="text-sm font-extrabold text-[#5e5c5c]  mt-1 ml-2">{{ tweet.comments_count
+                                <MessageOutline class="hover:bg-blue mt-1  p-2 rounded-full" fillColor="blue" size=12 
+                               
+                                />
+                                <span class="text-sm font-extrabold text-[#5e5c5c]  mt-1 ml-2">{{ replies_count
                                 }}</span>
 
                             </div>
@@ -190,7 +212,10 @@ const formatCreatedAt = (date) => {
                         </div>
                         <div class="flex justify-center items-center text-sm text-dark">
                             <div class="flex cursor-pointer">
-                                <Sync class="hover:bg-green-400  p-2 mt-1 rounded-full" fillColor="green" size=12 />
+                                <Sync class="hover:bg-green-400  p-2 mt-1 rounded-full" fillColor="green" size=12 
+                                @click.stop="Retweet(tweet)"/>
+                                <span class="text-sm font-extrabold text-[#5e5c5c]  mt-2 ml-2">{{ retweets_count
+                                }}</span>
                             </div>
                         </div>
                         <div class="flex justify-center items-center text-sm text-dark">

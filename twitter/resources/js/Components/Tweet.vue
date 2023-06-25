@@ -54,6 +54,7 @@ const LikeTheTweet = async (tweet) => {
     try {
         const response = await axios.post(`/tweets/${tweet.id}/like`);
         tweet.isLiked = response.data.isLiked;
+        console.log(response.data.isLiked)
 
         if (tweet.isLiked === true) {
             tweet.likes_count++;
@@ -110,12 +111,21 @@ const formatCreatedAt = (date) => {
 
 const Retweet = async (tweet) => {
 
-
     try {
-        const response= await axios.post(`/retweet/${tweet.user.username}/${tweet.id}`)
+        const response = await axios.post(`/retweet/${tweet.id}`)
+        tweet.isReTweeted = response.data.isReTweeted;
+        console.log(response.data.isReTweeted)
+        if (tweet.isReTweeted === true) {
+            tweet.retweets_count++;
+        }
+        else {
+            tweet.retweets_count--;
+        }
     } catch (error) {
-        
+        console.log(error)
+
     }
+
 }
 </script>
 
@@ -182,6 +192,9 @@ const Retweet = async (tweet) => {
                     <div class="flex cursor-pointer">
                         <Sync class="hover:bg-green-400  p-2 mt-1 rounded-full" fillColor="green" size=12
                             @click.stop="Retweet(props.tweet)" />
+                        <span class="text-sm  font-extrabold text-[#5e5c5c]   mt-2 ml-2">{{
+                            props.tweet.retweets_count
+                        }}</span>
                     </div>
                 </div>
                 <div class="flex justify-center items-center text-sm text-dark">

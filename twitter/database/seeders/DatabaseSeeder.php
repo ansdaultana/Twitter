@@ -23,7 +23,6 @@ class DatabaseSeeder extends Seeder
        Tweet::factory()->create(["id" => 38 ,"user_id"=>1,"parent_tweet_id"=>NULL,"text"=>'Succession Finale!!!!!!!!!!!!!!!!!!!!"',"image"=>"https://res.cloudinary.com/ddrivhxfq/image/upload/v1687185190/xvh0fi8e4zictp5aizl3.png"]);
        Tweet::factory()->create(["id"=>2 ,"user_id"=>2,"parent_tweet_id"=>38,"text"=>'favourite Series!!!!!!!!!!!!!!!',"image"=>"https://res.cloudinary.com/ddrivhxfq/image/upload/v1687186726/cb3k7udezss4gzllhdd0.jpg"]);
        Tweet::factory()->create(["id"=>46 ,"user_id"=>2,"text"=>"Top G !!!!!!!!!!!!!!!","video"=>"https://res.cloudinary.com/ddrivhxfq/video/upload/v1687187639/j8va2t6fqocfqch5m3ml.mp4"]);
-       Tweet::factory()->create(["id"=>6 ,"user_id"=>2,"text"=>"Top G","video"=>"https://res.cloudinary.com/ddrivhxfq/video/upload/v1687187639/j8va2t6fqocfqch5m3ml.mp4"]);
        Tweet::factory()->create(["id"=>1 ,"user_id"=>1,"text"=>"We Go Gym!!!!!!!!!!!!!!!!!!","image"=>"https://res.cloudinary.com/ddrivhxfq/image/upload/v1687244159/ampvpmadasvjwkcqetkx.jpg"]);
 
        Tweet::factory()->create(["id"=>3 ,"user_id"=>1,"text"=>"swipe up","image"=>"https://res.cloudinary.com/ddrivhxfq/image/upload/v1687256055/uq1ms6dwa9ei3iud4mxw.jpg"]);

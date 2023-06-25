@@ -45,7 +45,6 @@ class Tweet extends Model
     {
         return $this->hasMany(Retweet::class);
     }
-
     public function Hashtags()
     {
         return $this->belongsToMany(Hashtag::class,'hashtag_tweet');

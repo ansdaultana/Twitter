@@ -44,6 +44,7 @@ class TweetController extends Controller
             return $user;
         });
 
+        
         return Inertia::render('Feed', [
             'users' => $search ? User::query()
                 ->where(function ($query) use ($search) {
@@ -206,11 +207,23 @@ class TweetController extends Controller
             ->latest()
             ->get();
         $search = Request::input('search');
+        $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
+            $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
+        })
+            ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
+            ->where('id', '!=', $loggedInUser->id)
+            ->take(2)
+            ->get();
 
+        $mutualFollowing = $mutualFollowing->map(function ($user) {
+            $user->is_following = false;
+            return $user;
+        });
         return Inertia::render(
             'ShowTweet',
             [
-                'tweet' => $tweet,
+        "mutualFollowing" => $mutualFollowing,
+        'tweet' => $tweet,
                 'user' => $user,
                 'likes_count' => $tweet->likes()->count(),
                 'users' => $search

@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, ref, computed, inject,toRef } from 'vue';
+import { defineProps, ref, computed, inject, toRef } from 'vue';
 import Bluetick from '@/Components/Bluetick.vue'
 import MessageOutline from 'vue-material-design-icons/MessageOutline.vue'
 import Sync from 'vue-material-design-icons/Sync.vue'
@@ -106,6 +106,17 @@ const formatCreatedAt = (date) => {
         return `${seconds} second${seconds !== 1 ? 's' : ''} ago`;
     }
 }
+
+
+const Retweet = async (tweet) => {
+
+
+    try {
+        const response= await axios.post(`/retweet/${tweet.user.username}/${tweet.id}`)
+    } catch (error) {
+        
+    }
+}
 </script>
 
 
@@ -115,22 +126,16 @@ const formatCreatedAt = (date) => {
         <div class="lg:flex-none hidden md:block mr-4">
             <div class="flex items-center" @click.stop="GoToUserPage(props.tweet.user.username)">
 
-                <img 
-                :src='props.tweet.user.profile'
-                
-                class="h-12 w-12 rounded-full flex-none" />
+                <img :src='props.tweet.user.profile' class="h-12 w-12 rounded-full flex-none" />
             </div>
         </div>
         <div class="w-full relative">
             <div class="flex items-center md:justify-between w-full">
                 <div class="md:hidden flex items-center mr-2" @click.stop="GoToUserPage(props.tweet.user.username)">
 
-                    <img 
-                :src='props.tweet.user.profile'
-                    
-                    class="h-12 w-12 rounded-full flex-none" />
+                    <img :src='props.tweet.user.profile' class="h-12 w-12 rounded-full flex-none" />
                 </div>
-           
+
                 <div class="flex items-center" @click.stop="GoToUserPage(props.tweet.user.username)">
                     <p class="font-semibold text-white"> {{ props.tweet.user.name }} </p>
                     <Bluetick :username="props.tweet.user.username" />
@@ -151,22 +156,23 @@ const formatCreatedAt = (date) => {
                     </button>
                 </div>
             </div>
-            
+
             <p class="py-2 text-white">
                 {{ tweet.text }}
             </p>
             <div v-if="tweet.image" class="flex justify-center">
-                <img :src='tweet.image'  class=" max-h-500 max-w-500 rounded-xl w-96">
+                <img :src='tweet.image' class=" max-h-500 max-w-500 rounded-xl w-96">
             </div>
             <div v-if="tweet.video" class="flex justify-center">
-                <video  :src="tweet.video" controls class=" max-h-500 max-w-500 rounded-xl "/>
+                <video :src="tweet.video" controls class=" max-h-500 max-w-500 rounded-xl " />
 
             </div>
             <div class="flex items-center justify-between w-full">
                 <div class="flex items-center text-sm text-dark">
                     <div class="flex justify-center items-center cursor-pointer">
                         <MessageOutline class="hover:bg-blue mt-1  p-2 rounded-full" fillColor="blue" size=12 />
-                        <span class="text-sm font-extrabold text-[#5e5c5c]  mt-1 ml-2">{{ props.tweet.replies_count
+                        <span class="text-sm  hover:text-blue font-extrabold text-[#5e5c5c]   mt-1 ml-2">{{
+                            props.tweet.replies_count
                         }}</span>
 
                     </div>
@@ -174,11 +180,12 @@ const formatCreatedAt = (date) => {
                 </div>
                 <div class="flex justify-center items-center text-sm text-dark">
                     <div class="flex cursor-pointer">
-                        <Sync class="hover:bg-green-400  p-2 mt-1 rounded-full" fillColor="green" size=12 />
+                        <Sync class="hover:bg-green-400  p-2 mt-1 rounded-full" fillColor="green" size=12
+                            @click.stop="Retweet(props.tweet)" />
                     </div>
                 </div>
                 <div class="flex justify-center items-center text-sm text-dark">
-                    <div class="flex  cursor-pointer">
+                    <div class="flex  px-2 rounded-lg cursor-pointer">
 
                         <svg @click.stop="LikeTheTweet(props.tweet)" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="
@@ -191,7 +198,8 @@ const formatCreatedAt = (date) => {
                                 d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                         </svg>
 
-                        <span class="text-sm font-extrabold text-[#5e5c5c]  mt-1 ml-2">{{ props.tweet.likes_count }}</span>
+                        <span class="text-sm font-extrabold hover:text-red-600 text-[#5e5c5c]  mt-1 ml-2">{{
+                            props.tweet.likes_count }}</span>
 
                     </div>
                 </div>
@@ -220,11 +228,8 @@ const formatCreatedAt = (date) => {
                             </div>
 
                         </button>
-                        <button 
-                        v-if="ForAnyView(props.tweet.user.username)"
-                        @click.stop=""
-                        
-                        class="text-white px-2 py-3 hover:bg-gray-800 text-sm border-2 border-gray-600  border-b">
+                        <button v-if="ForAnyView(props.tweet.user.username)" @click.stop=""
+                            class="text-white px-2 py-3 hover:bg-gray-800 text-sm border-2 border-gray-600  border-b">
                             <div class="flex">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                     stroke="currentColor" class="w-5 h-5 mr-2">
@@ -240,9 +245,7 @@ const formatCreatedAt = (date) => {
 
                         </button>
 
-                        <button 
-                        @click.stop=""
-                        v-if="ForAnyView(props.tweet.user.username)"
+                        <button @click.stop="" v-if="ForAnyView(props.tweet.user.username)"
                             class="text-white px-2 py-3 hover:text-red-900 hover:bg-red-300  text-sm border-2 border-gray-600  border-b">
                             <div class="flex">
                                 <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -304,10 +307,10 @@ const formatCreatedAt = (date) => {
 </template>
 <style>
 .max-h-500 {
-  max-height: 500px;
+    max-height: 500px;
 }
 
 .max-w-500 {
-  max-width: 500px;
+    max-width: 500px;
 }
 </style>

@@ -108,6 +108,9 @@ const IsUserSure = (id, method) => {
 
     }
 }
+const formatTweetText = (text) => {
+  return text.replace(/#\w+/g, '<span class="text-zinc">$&</span>');
+};
 
 const formatCreatedAt = (date) => {
     const createdDate = new Date(date);
@@ -183,8 +186,8 @@ const formatCreatedAt = (date) => {
                             </button>
                         </div>
                     </div>
-                    <p class="py-2 text-white">
-                        {{ tweet.text }}
+                    <p class="py-2 text-white">                
+                        <span v-html="formatTweetText(tweet.text)"></span>
                     </p>
                   
                     <div v-if="tweet.image" class="flex justify-center">

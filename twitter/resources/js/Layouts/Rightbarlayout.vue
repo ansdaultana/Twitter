@@ -39,7 +39,6 @@ const navigateToUser = (searchedUser) => {
 
 
 const gotoTag=(tag)=>{
-    console.log(tag.id)
     router.get(`/tags/${tag.id}`);
 }
 const followOrUnfollow = async (user) => {
@@ -109,7 +108,7 @@ const goToExplore = () => {
                 class="w-80 flex justify-between hover:bg-[#2F2F2F] p-3 cursor-pointer transition duration-200 ease-in-out">
                 <div>
                     <p class="font-semibold text-white  text-sm text-left leading-tight"> {{ tag.tag }} </p>
-                    <p class="text-left text-sm leading-tight text-dark"> {{ tag.tweets_count }} </p>
+                    <p class="text-left text-sm leading-tight text-dark"> {{ tag.tweets_count }} Tweets</p>
                 </div>
                 <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                     class="w-6 text-white h-6 mr-5">
@@ -118,7 +117,9 @@ const goToExplore = () => {
                 </svg>
 
             </button>
-            <button class="p-3 w-full hover:bg-[#2F2F2F] text-left text-[#48C9B0]">
+            <button
+            @click="goToExplore"
+             class="p-3 w-full hover:bg-[#2F2F2F] text-left text-[#48C9B0]">
                 Show More
             </button>
         </div>

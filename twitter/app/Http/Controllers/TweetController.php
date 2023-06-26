@@ -108,7 +108,7 @@ class TweetController extends Controller
             $user->is_following = false;
             return $user;
         });
-        $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
+        $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(10)->get();
      
         
         return Inertia::render('ExplorePage', [
@@ -193,7 +193,12 @@ class TweetController extends Controller
                         ]);
                         $newHash->tweets()->attach($tweet->id);
                     } else {
-                        $existingTag->tweets()->attach($tweet->id);
+                     $isAlreadyAttached=   $existingTag->tweets()->where('tweet_id',$tweet->id)->exists();
+                     if (!$isAlreadyAttached) {
+                      $existingTag->tweets()->attach($tweet->id);
+
+                        # code...
+                     }
                     }
                 }
             }

@@ -105,7 +105,9 @@ const formatCreatedAt = (date) => {
         return `${seconds} second${seconds !== 1 ? 's' : ''} ago`;
     }
 }
-
+const formatTweetText = (text) => {
+  return text.replace(/#\w+/g, '<span class="text-zinc">$&</span>');
+};
 
 const Retweet = async (tweet) => {
 
@@ -174,7 +176,7 @@ const Retweet = async (tweet) => {
             </div>
 
             <p class="py-2 text-white">
-                {{ tweet.text }}
+                <span v-html="formatTweetText(tweet.text)"></span>
             </p>
             <div v-if="tweet.image" class="flex justify-center">
                 <img :src='tweet.image' class=" max-h-500 max-w-500 rounded-xl w-56 md:w-96">

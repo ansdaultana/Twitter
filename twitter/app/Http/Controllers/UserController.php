@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Follower;
+use App\Models\Hashtag;
 use App\Models\Like;
 use App\Models\Tweet;
 use App\Models\User;
@@ -64,9 +65,11 @@ class UserController extends Controller
             $user->is_following = false;
             return $user;
         });
-
+      $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
         return Inertia::render('UserShow', [
             "BeingVieweduser" => $user,
+        'hashtags'=>$Hashtag,
+
             "mutualFollowing" => $mutualFollowing,
 
             "admin" => "ansdaultana",
@@ -119,9 +122,11 @@ class UserController extends Controller
             $user->is_following = false;
             return $user;
         });
-
+        $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
         return Inertia::render('UserShow', [
             "BeingVieweduser" => $user,
+        'hashtags'=>$Hashtag,
+
             "mutualFollowing" => $mutualFollowing,
             "tweets" => $tweets,
             "admin" => "ansdaultana",
@@ -191,11 +196,13 @@ class UserController extends Controller
             return $user;
         });
 
+        $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
         return Inertia::render(
             'Followers',
             [
                 "admin" => "ansdaultana",
                 "mutualFollowing" => $mutualFollowing,
+                'hashtags'=>$Hashtag,
 
                 'followers' => $followers,
                 "BeingVieweduser" => $user,
@@ -235,12 +242,14 @@ class UserController extends Controller
             $user->is_following = false;
             return $user;
         });
+        $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
 
         return Inertia::render(
 
             'Following',
             [
                 "mutualFollowing" => $mutualFollowing,
+                'hashtags'=>$Hashtag,
 
                 "admin" => "ansdaultana",
                 'following' => $following,

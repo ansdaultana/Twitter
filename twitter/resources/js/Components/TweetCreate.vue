@@ -36,14 +36,24 @@ let newTweet = useForm({
     text: "",
     image: null,
     video: null,
+    hashtags:null,
 });
 let ReplyForm = useForm({
     text: "",
     image: null,
     video: null,
+    hashtags:null,
+
 });
+const scanHashtags = (text) => {
+  const hashtagRegex = /#[^\s#]+/g;
+  const hashtags = text.match(hashtagRegex);
+  return hashtags ? hashtags : [];
+}
 
 let addNewTweet = () => {
+    
+    newTweet.hashtags= scanHashtags(newTweet.text);
     newTweet.post('/createtweet');
     displayImage.value = false;
     displayVideo.value = false;
@@ -52,6 +62,8 @@ let addNewTweet = () => {
     newTweet.text = ''
 }
 const postReply = (id) => {
+    ReplyForm.hashtags= scanHashtags(ReplyForm.text);
+
     ReplyForm.post(`/replytweet/${id}`);
     displayImage.value = false;
     displayVideo.value = false;
@@ -65,17 +77,14 @@ const VisitProfile = (username) => {
 
     }
 }
-
 const UploadImageForLocalViewing = (file) => {
     displayImage.value = true;
     selectedImage.value = file
 }
-
 const UploadVideoForLocalViewing = (file) => {
     selectedVideo.value = file;
     displayVideo.value = true;
 }
-
 const selectedImageUrl = computed(() => {
     if (selectedImage.value) {
         return URL.createObjectURL(selectedImage.value);

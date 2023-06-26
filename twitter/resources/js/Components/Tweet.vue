@@ -12,8 +12,6 @@ const AreYouSure = ref(inject('AreYouSure'));
 const ShowAreYouSure = ref(inject('ShowAreYouSure'));
 const Menu = ref(false)
 
-
-
 const props = defineProps({
     tweet: {
         type: Object,

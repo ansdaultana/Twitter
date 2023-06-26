@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\Hashtag;
 use App\Models\Like;
 use App\Models\Retweet;
 use App\Models\Tweet;
@@ -22,40 +23,37 @@ class TweetController extends Controller
         $followingIds = $loggedInUser->following()->pluck('user_id');
 
         $allTweets = Tweet::with(['user', 'likes'])
-        ->where(function ($query) use ($followingIds) {
-            $query->whereIn('user_id', $followingIds)
-                ->orWhereIn('id', function ($query) use ($followingIds) {
-                    $query->select('tweet_id')
-                        ->from('retweets')
-                        ->whereIn('user_id', $followingIds);
-                });
-        })
-        ->whereNull('parent_tweet_id')
-        ->withCount(['likes', 'replies', 'retweets'])
-        ->addSelect([
-            'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
-                ->whereColumn('tweet_id', 'tweets.id')
-                ->where('user_id', $loggedInUser->id)
-                ->limit(1),
-            'isReTweeted' => Retweet::selectRaw('IF(COUNT(id) > 0, 1, 0)')
-                ->whereColumn('tweet_id', 'tweets.id')
-                ->where('user_id', $loggedInUser->id)
-                ->limit(1),
-            'retweetedBy' =>  Retweet::select('name') // Change 'user_id' to 'name'
-            ->join('users', 'retweets.user_id', '=', 'users.id')
-            ->whereColumn('tweet_id', 'tweets.id')
-            ->limit(1),
-        ])
-        ->latest()
-        ->get();
-       
+            ->where(function ($query) use ($followingIds) {
+                $query->whereIn('user_id', $followingIds)
+                    ->orWhereIn('id', function ($query) use ($followingIds) {
+                        $query->select('tweet_id')
+                            ->from('retweets')
+                            ->whereIn('user_id', $followingIds);
+                    });
+            })
+            ->whereNull('parent_tweet_id')
+            ->withCount(['likes', 'replies', 'retweets'])
+            ->addSelect([
+                'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                    ->whereColumn('tweet_id', 'tweets.id')
+                    ->where('user_id', $loggedInUser->id)
+                    ->limit(1),
+                'isReTweeted' => Retweet::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                    ->whereColumn('tweet_id', 'tweets.id')
+                    ->where('user_id', $loggedInUser->id)
+                    ->limit(1),
+                'retweetedBy' => Retweet::select('name')    
+                    ->join('users', 'retweets.user_id', '=', 'users.id')
+                    ->whereColumn('tweet_id', 'tweets.id')
+                    ->limit(1),
+            ])
+            ->latest()
+            ->get();
+        $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
             $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
         })
-            ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))
-            ->where('id', '!=', $loggedInUser->id)
-            ->take(2)
-            ->get();
+            ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))->where('id', '!=', $loggedInUser->id)->take(2)->get();
         $mutualFollowing = $mutualFollowing->map(function ($user) {
             $user->is_following = false;
             return $user;
@@ -74,7 +72,7 @@ class TweetController extends Controller
             'tweets' => $allTweets,
             "admin" => "ansdaultana",
             "mutualFollowing" => $mutualFollowing,
-
+            'hashtags'=>$Hashtag,
         ]);
     }
 
@@ -110,7 +108,9 @@ class TweetController extends Controller
             $user->is_following = false;
             return $user;
         });
-
+        $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
+     
+        
         return Inertia::render('ExplorePage', [
             'users' => $search ? User::query()
                 ->where(function ($query) use ($search) {
@@ -123,11 +123,12 @@ class TweetController extends Controller
             'tweets' => $Tweets,
             "admin" => "ansdaultana",
             "mutualFollowing" => $mutualFollowing,
+        'hashtags'=>$Hashtag,
+
         ]);
     }
     public function create()
     {
-
         $attributes = request()->validate([
             'text' => 'required|min:3',
         ]);
@@ -142,7 +143,21 @@ class TweetController extends Controller
                 $attributes['video'] = $uploadedVideo->getSecurePath();
 
             }
-            Tweet::create($attributes);
+            $tweet = Tweet::create($attributes);
+            if (request('hashtags')) {
+                $Hashtagss = request('hashtags');
+                foreach ($Hashtagss as $tag) {
+                    $existingTag = Hashtag::where('tag', $tag)->first();
+                    if (!$existingTag) {
+                        $newHash = Hashtag::create([
+                            'tag' => $tag
+                        ]);
+                        $newHash->tweets()->attach($tweet->id);
+                    } else {
+                        $existingTag->tweets()->attach($tweet->id);
+                    }
+                }
+            }
         } else {
 
             abort(403);
@@ -168,6 +183,20 @@ class TweetController extends Controller
 
             }
             $tweet->update($attributes);
+            if (request('hashtags')) {
+                $Hashtagss = request('hashtags');
+                foreach ($Hashtagss as $tag) {
+                    $existingTag = Hashtag::where('tag', $tag)->first();
+                    if (!$existingTag) {
+                        $newHash = Hashtag::create([
+                            'tag' => $tag
+                        ]);
+                        $newHash->tweets()->attach($tweet->id);
+                    } else {
+                        $existingTag->tweets()->attach($tweet->id);
+                    }
+                }
+            }
         } else {
             abort(403);
         }
@@ -204,7 +233,21 @@ class TweetController extends Controller
                 $attributes['video'] = $uploadedVideo->getSecurePath();
 
             }
-            Tweet::create($attributes);
+            $tweet = Tweet::create($attributes);
+            if (request('hashtags')) {
+                $Hashtagss = request('hashtags');
+                foreach ($Hashtagss as $tag) {
+                    $existingTag = Hashtag::where('tag', $tag)->first();
+                    if (!$existingTag) {
+                        $newHash = Hashtag::create([
+                            'tag' => $tag
+                        ]);
+                        $newHash->tweets()->attach($tweet->id);
+                    } else {
+                        $existingTag->tweets()->attach($tweet->id);
+                    }
+                }
+            }
         } else {
             abort(403);
         }
@@ -213,13 +256,13 @@ class TweetController extends Controller
     {
         $loggedInUser = auth()->user();
         $replies = Tweet::with('user', 'likes')
-            ->withCount('likes','replies','retweets')
+            ->withCount('likes', 'replies', 'retweets')
             ->addSelect([
                 'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
                     ->whereColumn('tweet_id', 'tweets.id')
                     ->where('user_id', $loggedInUser->id)
                     ->limit(1),
-                    'isReTweeted' => Retweet::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                'isReTweeted' => Retweet::selectRaw('IF(COUNT(id) > 0, 1, 0)')
                     ->whereColumn('tweet_id', 'tweets.id')
                     ->where('user_id', $loggedInUser->id)
                     ->limit(1),
@@ -227,6 +270,9 @@ class TweetController extends Controller
             ->latest()
             ->get();
         $search = Request::input('search');
+        $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
+   
+        
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
             $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
         })
@@ -242,6 +288,8 @@ class TweetController extends Controller
         return Inertia::render(
             'ShowTweet',
             [
+            'hashtags'=>$Hashtag,
+
                 "mutualFollowing" => $mutualFollowing,
                 'tweet' => $tweet,
                 'user' => $user,
@@ -273,17 +321,17 @@ class TweetController extends Controller
     public function retweet(Tweet $tweet)
     {
         $loggedInUser = auth()->user();
-    
+
         try {
             $checkTweet = Tweet::findOrFail($tweet->id);
         } catch (ModelNotFoundException $e) {
             abort(404, 'Tweet not found');
         }
-        $isReTweeted= $tweet->retweets()->where([
+        $isReTweeted = $tweet->retweets()->where([
             'tweet_id' => $tweet->id,
             'user_id' => $loggedInUser->id,
         ])->exists();
-    
+
         if ($isReTweeted) {
             $tweet->retweets()->where([
                 'tweet_id' => $tweet->id,
@@ -300,10 +348,73 @@ class TweetController extends Controller
         $response = [
             'isReTweeted' => $isReTweeted,
         ];
-    
+
         return response()->json($response);
     }
-        /**
+
+    public function Hashtags($tag)
+    {
+        $hashtag = Hashtag::find($tag);
+        if($hashtag)
+        {
+        $tagId=$hashtag->id;
+        $loggedInUser = auth()->user();
+        $search = Request::input('search');
+        $followingIds = $loggedInUser->following()->pluck('user_id');
+        $allTweets = Tweet::with(['user', 'likes'])
+        ->whereNull('parent_tweet_id')
+        ->whereHas('hashtags', function ($query) use ($tagId) {
+            $query->where('hashtags.id', $tagId);
+        })
+        ->withCount(['likes', 'replies', 'retweets'])
+        ->addSelect([
+            'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                ->whereColumn('tweet_id', 'tweets.id')
+                ->where('user_id', $loggedInUser->id)
+                ->limit(1),
+            'isReTweeted' => Retweet::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                ->whereColumn('tweet_id', 'tweets.id')
+                ->where('user_id', $loggedInUser->id)
+                ->limit(1),
+            'retweetedBy' => Retweet::select('name')
+                ->join('users', 'retweets.user_id', '=', 'users.id')
+                ->whereColumn('tweet_id', 'tweets.id')
+                ->limit(1),
+        ])
+        ->latest()
+        ->get();
+        $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
+        $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
+            $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
+        })
+            ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))->where('id', '!=', $loggedInUser->id)->take(2)->get();
+        $mutualFollowing = $mutualFollowing->map(function ($user) {
+            $user->is_following = false;
+            return $user;
+        });
+
+
+        return Inertia::render('Feed', [
+            'users' => $search ? User::query()
+                ->where(function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('username', 'like', '%' . $search . '%');
+                })
+                ->where('id', '!=', auth()->id())
+                ->limit(20)
+                ->get() : [],
+            'tweets' => $allTweets,
+            "admin" => "ansdaultana",
+            "mutualFollowing" => $mutualFollowing,
+            'hashtags'=>$Hashtag,
+        ]);
+        }
+        else {
+            
+            abort(404);
+        }
+    }
+    /**
      * Show the form for editing the specified resource.
      */
 

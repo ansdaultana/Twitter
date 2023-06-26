@@ -47,6 +47,6 @@ class Tweet extends Model
     }
     public function Hashtags()
     {
-        return $this->belongsToMany(Hashtag::class,'hashtag_tweet');
+        return $this->belongsToMany(Hashtag::class,'hashtag_tweets');
     }
 }

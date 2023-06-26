@@ -53,6 +53,8 @@ let newTweet = useForm({
   text: "",
   image: null,
   video: null,
+  hashtags:null,
+
 });
 watch(EditTweet, (newValue) => {
   EditTweetForm.text = newValue ? newValue.text : '';
@@ -62,6 +64,8 @@ let EditTweetForm = useForm(
     text: '',
     image: null,
     video: null,
+  hashtags:null,
+
   }
 )
 const UploadImageForLocalViewing = (file) => {
@@ -74,10 +78,15 @@ const UploadVideoForLocalViewing = (file) => {
   selectedVideo.value = URL.createObjectURL(file);
 }
 
-
+const scanHashtags = (text) => {
+  const hashtagRegex = /#[^\s#]+/g;
+  const hashtags = text.match(hashtagRegex);
+  return hashtags ? hashtags : [];
+}
 let EditTweetfunc = (id) => {
   tweetsidebtn.value = false;
   edit.value = false;
+  EditTweetForm.hashtags= scanHashtags(EditTweetForm.text);
   EditTweetForm.post(`/edittweet/${id}`);
   displayImage.value = false;
   displayVideo.value = false;
@@ -109,8 +118,8 @@ const UploadNewPhotoOrVideo = (event) => {
     invalidUploadText.value = 'You can only Upload Picture or Video';
   }
 }
-
 let addNewTweet = () => {
+  newTweet.hashtags= scanHashtags(newTweet.text);
   newTweet.post('/createtweet');
   displayImage.value = false;
   displayVideo.value = false;

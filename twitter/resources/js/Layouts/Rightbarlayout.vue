@@ -9,6 +9,7 @@ const page = usePage();
 const users = computed(() => page.props.users);
 const Authuser = computed(() => page.props.auth.user);
 
+const hashtags = computed(() => page.props.hashtags);
 const mutualFollowing = computed(() => page.props.mutualFollowing);
 let currentPath = ref(window.location.pathname);
 let searchValue = ref('');
@@ -35,13 +36,12 @@ const navigateToUser = (searchedUser) => {
     router.get(`/users/${username}`);
 
 };
-let trending = [
-    { top: 'Music', title: 'We Won', bottom: '135K Tweets' },
-    { top: 'Pop', title: 'Blue Ivy', bottom: '40k tweets' },
-    { top: 'Trending in US', title: 'Denim Day', bottom: '40k tweets' },
-    { top: 'Trending', title: 'When Beyonce', bottom: '25.4k tweets' },
-];
 
+
+const gotoTag=(tag)=>{
+    console.log(tag.id)
+    router.get(`/tags/${tag.id}`);
+}
 const followOrUnfollow = async (user) => {
 
 try {
@@ -103,12 +103,13 @@ const goToExplore = () => {
                 <i class="fas fa-cog text-lg text-blue"></i>
             </div>
 
-            <button v-for="trend in trending"
+            <button v-for="tag in hashtags"
+
+            @click="gotoTag(tag)"
                 class="w-80 flex justify-between hover:bg-[#2F2F2F] p-3 cursor-pointer transition duration-200 ease-in-out">
                 <div>
-                    <p class="text-xs text-left leading-tight text-dark"> {{ trend.top }} </p>
-                    <p class="font-semibold text-white  text-sm text-left leading-tight"> {{ trend.title }} </p>
-                    <p class="text-left text-sm leading-tight text-dark"> {{ trend.bottom }} </p>
+                    <p class="font-semibold text-white  text-sm text-left leading-tight"> {{ tag.tag }} </p>
+                    <p class="text-left text-sm leading-tight text-dark"> {{ tag.tweets_count }} </p>
                 </div>
                 <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                     class="w-6 text-white h-6 mr-5">

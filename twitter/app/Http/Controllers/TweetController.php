@@ -51,6 +51,11 @@ class TweetController extends Controller
             ])
             ->latest()
             ->get();
+            $allTweets->transform(function ($tweet) {
+                $tweet->isLiked = (bool) $tweet->isLiked;
+                $tweet->isReTweeted = (bool) $tweet->isReTweeted;
+                return $tweet;
+            });
         $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
             $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
@@ -96,7 +101,11 @@ class TweetController extends Controller
             ->whereNull('parent_tweet_id')
             ->latest()
             ->get();
-        $loggedInUser = auth()->user();
+            $Tweets->transform(function ($tweet) {
+                $tweet->isLiked = (bool) $tweet->isLiked;
+                $tweet->isReTweeted = (bool) $tweet->isReTweeted;
+                return $tweet;
+            });
         $Notificationscount = $loggedInUser->unreadNotifications->count();
 
 
@@ -293,7 +302,11 @@ class TweetController extends Controller
         $search = Request::input('search');
         $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
         $Notificationscount = $loggedInUser->unreadNotifications->count();
-
+        $replies->transform(function ($tweet) {
+            $tweet->isLiked = (bool) $tweet->isLiked;
+            $tweet->isReTweeted = (bool) $tweet->isReTweeted;
+            return $tweet;
+        });
 
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
             $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));

@@ -27,6 +27,8 @@ Route::get('/register', [UserController::class, 'new']);
 Route::middleware('auth')->group(function () {
     Route::get('/home', [TweetController::class, 'index']);
     Route::get('/explore', [TweetController::class, 'explore']);
+    Route::get('/notification', [TweetController::class, 'notification']);
+
 
     Route::get('/users/{user:username}', [UserController::class, 'show'])->name('user.show');
     Route::get('/{user:username}', [UserController::class, 'index'])->name('user.index');
@@ -42,7 +44,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/replytweet/{tweet:id}',[TweetController::class,'addReply']);
     Route::post('/retweet/{tweet:id}',[TweetController::class,'retweet']);
     Route::get('/tags/{tag}',[TweetController::class,'Hashtags']);
+
     Route::post('/updateprofile/{user:id}',[UserController::class,'updateprofile']);
+
 
 
 

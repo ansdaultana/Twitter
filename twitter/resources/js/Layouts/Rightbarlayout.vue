@@ -128,7 +128,7 @@ const goToExplore = () => {
             <div class=" p-3">
                 <p class="text-lg font-bold text-[#48C9B0]">Who to Follow</p>
             </div>
-            <div v-if="mutualFollowing.length>0">
+            <div v-if="mutualFollowing && mutualFollowing.length>0">
 
             <div v-for="mutual in mutualFollowing">
 

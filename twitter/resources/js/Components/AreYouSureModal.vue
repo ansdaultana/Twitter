@@ -11,7 +11,7 @@ const closemodal = () => {
     Show.value = false;
 }
 const DeleteTweet = (id) => {
-    router.post(`deletetweet/${id}`);
+    router.post(`/deletetweet/${id}`);
     closemodal();
 }
 

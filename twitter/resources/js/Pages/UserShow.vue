@@ -9,6 +9,8 @@ import axios from 'axios';
 import { ref } from 'vue'
 import { Head } from '@inertiajs/vue3';
 
+
+
 const openEditProfile=ref(inject('openEditProfile'));
 
 defineOptions({

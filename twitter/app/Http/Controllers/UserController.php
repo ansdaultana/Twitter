@@ -7,6 +7,7 @@ use App\Models\Hashtag;
 use App\Models\Like;
 use App\Models\Tweet;
 use App\Models\User;
+use App\Notifications\NewFollower;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Request;
@@ -50,7 +51,8 @@ class UserController extends Controller
             ->whereNull('parent_tweet_id')
             ->latest()
             ->get();
-
+            $Notificationscount = $loggedInUser->unreadNotifications->count();
+          
         $followerCount = $user->followers()->count();
         $followingCount = $user->following()->count();
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
@@ -69,7 +71,7 @@ class UserController extends Controller
         return Inertia::render('UserShow', [
             "BeingVieweduser" => $user,
         'hashtags'=>$Hashtag,
-
+        'Notificationscount'=>$Notificationscount,
             "mutualFollowing" => $mutualFollowing,
 
             "admin" => "ansdaultana",
@@ -122,10 +124,14 @@ class UserController extends Controller
             $user->is_following = false;
             return $user;
         });
+        $Notificationscount = $loggedInUser->unreadNotifications->count();
+     
+        
         $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
         return Inertia::render('UserShow', [
             "BeingVieweduser" => $user,
         'hashtags'=>$Hashtag,
+        'Notificationscount'=>$Notificationscount,
 
             "mutualFollowing" => $mutualFollowing,
             "tweets" => $tweets,
@@ -164,6 +170,13 @@ class UserController extends Controller
         } else {
             $loggedInUser->following()->attach($targetUser->id);
             $isFollowing = true;
+            $notificationData=[
+                'user_id'=>$targetUser->id,
+                'follower_id'=>$loggedInUser->id,
+                'follower_name'=>$loggedInUser->name,
+                'follower_profile'=>$loggedInUser->profile,
+            ];
+            $targetUser->notify(new NewFollower($notificationData));
         }
         $response = [
             'isFollowing' => $isFollowing,
@@ -181,6 +194,7 @@ class UserController extends Controller
         });
 
         $loggedInUser = auth()->user();
+        $Notificationscount = $loggedInUser->unreadNotifications->count();
 
         $search = Request::input('search');
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
@@ -200,6 +214,8 @@ class UserController extends Controller
         return Inertia::render(
             'Followers',
             [
+        'Notificationscount'=>$Notificationscount,
+
                 "admin" => "ansdaultana",
                 "mutualFollowing" => $mutualFollowing,
                 'hashtags'=>$Hashtag,
@@ -230,6 +246,9 @@ class UserController extends Controller
 
             return $user;
         });
+        $Notificationscount = $loggedInUser->unreadNotifications->count();
+       
+        
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
             $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
         })
@@ -250,6 +269,7 @@ class UserController extends Controller
             [
                 "mutualFollowing" => $mutualFollowing,
                 'hashtags'=>$Hashtag,
+                'Notificationscount'=>$Notificationscount,
 
                 "admin" => "ansdaultana",
                 'following' => $following,

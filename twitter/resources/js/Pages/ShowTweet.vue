@@ -108,8 +108,11 @@ const IsUserSure = (id, method) => {
 
     }
 }
+window.gotoTag = function(tag) {
+  console.log('Clicked hashtag:', tag);
+};
 const formatTweetText = (text) => {
-  return text.replace(/#\w+/g, '<span class="text-zinc">$&</span>');
+  return text.replace(/#\w+/g, '<span onclick="gotoTag(\'$&\')" class="text-zinc">$&</span>');
 };
 
 const formatCreatedAt = (date) => {

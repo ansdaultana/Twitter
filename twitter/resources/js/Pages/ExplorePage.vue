@@ -5,6 +5,7 @@ import { ref, watch, computed, watchEffect } from 'vue';
 import { onMounted, } from 'vue';
 import Bluetick from '@/Components/Bluetick.vue'
 import TwitterLayout from '@/Layouts/TwitterLayout.vue';
+import { Head } from '@inertiajs/vue3';
 
 const page = usePage();
 const mutualFollowing = computed(() => page.props.mutualFollowing);
@@ -60,6 +61,8 @@ const gotoTag=(tag)=>{
 </script>
 
 <template>
+<Head title="Explore" />
+
     <div name="feed" class="  border-gray-800  py-2 px-6 relative 
     
  h-full bg-black overflow-y-scroll  scrollbar-hide
@@ -118,9 +121,7 @@ const gotoTag=(tag)=>{
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
                 </svg>
-
             </button>
-            
         </div>
         <div class="w-full md:hidden  rounded-lg bg-[#181818] border mb-2 border-gray-800 my-4"
             v-if="mutualFollowing.length > 0">

@@ -1,7 +1,7 @@
 <script setup>
 import TwitterLayout from '@/Layouts/TwitterLayout.vue';
 import Bluetick from '@/Components/Bluetick.vue'
-
+import { Head } from '@inertiajs/vue3';
 import { computed, ref } from "vue";
 import { usePage, router } from '@inertiajs/vue3';
 defineOptions({
@@ -46,6 +46,8 @@ const followOrUnfollow = async (following) => {
 
 
 <template>
+<Head title="Following" />
+
     <div class="w-full md:w-1/2 h-full overflow-y-scroll overflow-x-hidden scrollbar-hide">
         <div class="flex-col">
             <div class="px-5 py-2 border-gray-900 border-b flex justify-between">

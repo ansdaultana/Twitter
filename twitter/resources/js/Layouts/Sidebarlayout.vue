@@ -1,6 +1,7 @@
 <script setup>
 import { ref, inject, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+
 import MenuItem from '@/Components/MenuItem.vue';
 import Twitter from 'vue-material-design-icons/Twitter.vue';
 import DotsHorizontal from 'vue-material-design-icons/DotsHorizontal.vue';
@@ -22,6 +23,9 @@ const goToHome = () => {
 }
 const goToExplore = () => {
   router.get('/explore');
+}
+const goToNotification = () => {
+  router.get('/notification');
 }
 const VisitProfile = (username) => {
   if (window.location.pathname !== `/${username}`) {
@@ -55,7 +59,7 @@ const VisitProfile = (username) => {
             Search
           </div>
         </button>
-        <MenuItem iconString="Notifications" />
+        <MenuItem iconString="Notifications" @click="goToNotification"/> 
         <MenuItem iconString="Messages" />
         <MenuItem iconString="Profile" @click="VisitProfile(user.username)" />
         <button @click="handleClick"

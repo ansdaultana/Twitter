@@ -105,10 +105,14 @@ const formatCreatedAt = (date) => {
         return `${seconds} second${seconds !== 1 ? 's' : ''} ago`;
     }
 }
-const formatTweetText = (text) => {
-  return text.replace(/#\w+/g, '<span class="text-zinc">$&</span>');
-};
 
+window.gotoTag = function(tag) {
+    //router.get(`/tags/${tag}`)
+  console.log('Clicked hashtag:', tag);
+};
+const formatTweetText = (text) => {
+  return text.replace(/#\w+/g, '<span onclick="gotoTag(\'$&\')" class="text-zinc">$&</span>');
+};
 const Retweet = async (tweet) => {
 
     try {
@@ -141,7 +145,7 @@ const Retweet = async (tweet) => {
     <div class="w-full p-4 border-b border-gray-800 hover:bg-[#181818] flex cursor-pointer transition duration-200 ease-in-out"
         :class="{ 'hover:bg-black': Menu }" @click="GoToTweet(props.tweet.user.username, props.tweet.id)">
         
-        <div class="lg:flex-none hidden md:block mr-4">
+        <div class="lg:flex-none w-16 hidden md:block mr-4">
             <div class="flex items-center" @click.stop="GoToUserPage(props.tweet.user.username)">
 
                 <img :src='props.tweet.user.profile' class="h-12 w-12 rounded-full flex-none" />

@@ -6,6 +6,7 @@ use App\Models\Like;
 use App\Http\Requests\StoreLikeRequest;
 use App\Http\Requests\UpdateLikeRequest;
 use App\Models\Tweet;
+use App\Notifications\NewLike;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LikeController extends Controller
@@ -20,7 +21,6 @@ class LikeController extends Controller
     public function like(Tweet $tweet)
     {
         $loggedInUser = auth()->user();
-    
         try {
             $checkTweet = Tweet::findOrFail($tweet->id);
         } catch (ModelNotFoundException $e) {
@@ -38,11 +38,23 @@ class LikeController extends Controller
                 'user_id' => $loggedInUser->id,
             ])->delete();
         } else {
+            
+
+            $tweetowner=$tweet->user;
+            $notificationData=[
+                'tweet_id'=>$tweet->id,
+                'liker_id'=>$loggedInUser->id,
+                'liker_name'=>$loggedInUser->name,
+                'liker_profile'=>$loggedInUser->profile,
+            ];
+            $tweetowner->notify(new NewLike($notificationData));
             $like = new Like([
                 'user_id' => $loggedInUser->id,
                 'tweet_id' => $tweet->id,
             ]);
             $like->save();
+
+            
         }
     
         $isLiked = !$isLiked;

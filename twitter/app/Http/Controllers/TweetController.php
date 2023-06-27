@@ -9,6 +9,8 @@ use App\Models\Tweet;
 use App\Http\Requests\StoreTweetRequest;
 use App\Http\Requests\UpdateTweetRequest;
 use App\Models\User;
+use App\Notifications\NewReply;
+use App\Notifications\NewRetweet;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -42,7 +44,7 @@ class TweetController extends Controller
                     ->whereColumn('tweet_id', 'tweets.id')
                     ->where('user_id', $loggedInUser->id)
                     ->limit(1),
-                'retweetedBy' => Retweet::select('name')    
+                'retweetedBy' => Retweet::select('name')
                     ->join('users', 'retweets.user_id', '=', 'users.id')
                     ->whereColumn('tweet_id', 'tweets.id')
                     ->limit(1),
@@ -58,7 +60,7 @@ class TweetController extends Controller
             $user->is_following = false;
             return $user;
         });
-
+        $Notificationscount = $loggedInUser->unreadNotifications->count();
 
         return Inertia::render('Feed', [
             'users' => $search ? User::query()
@@ -72,7 +74,8 @@ class TweetController extends Controller
             'tweets' => $allTweets,
             "admin" => "ansdaultana",
             "mutualFollowing" => $mutualFollowing,
-            'hashtags'=>$Hashtag,
+            'hashtags' => $Hashtag,
+            'Notificationscount'=>$Notificationscount,
         ]);
     }
 
@@ -94,6 +97,7 @@ class TweetController extends Controller
             ->latest()
             ->get();
         $loggedInUser = auth()->user();
+        $Notificationscount = $loggedInUser->unreadNotifications->count();
 
 
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
@@ -109,8 +113,8 @@ class TweetController extends Controller
             return $user;
         });
         $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(10)->get();
-     
-        
+
+
         return Inertia::render('ExplorePage', [
             'users' => $search ? User::query()
                 ->where(function ($query) use ($search) {
@@ -123,7 +127,8 @@ class TweetController extends Controller
             'tweets' => $Tweets,
             "admin" => "ansdaultana",
             "mutualFollowing" => $mutualFollowing,
-        'hashtags'=>$Hashtag,
+            'hashtags' => $Hashtag,
+            'Notificationscount'=>$Notificationscount,
 
         ]);
     }
@@ -193,12 +198,12 @@ class TweetController extends Controller
                         ]);
                         $newHash->tweets()->attach($tweet->id);
                     } else {
-                     $isAlreadyAttached=   $existingTag->tweets()->where('tweet_id',$tweet->id)->exists();
-                     if (!$isAlreadyAttached) {
-                      $existingTag->tweets()->attach($tweet->id);
+                        $isAlreadyAttached = $existingTag->tweets()->where('tweet_id', $tweet->id)->exists();
+                        if (!$isAlreadyAttached) {
+                            $existingTag->tweets()->attach($tweet->id);
 
-                        # code...
-                     }
+                            # code...
+                        }
                     }
                 }
             }
@@ -223,6 +228,7 @@ class TweetController extends Controller
     public function addReply(Tweet $tweet)
     {
         //
+        $loggedInUser = auth()->user();
         $attributes = request()->validate([
             'text' => 'required|min:3',
         ]);
@@ -238,7 +244,7 @@ class TweetController extends Controller
                 $attributes['video'] = $uploadedVideo->getSecurePath();
 
             }
-            $tweet = Tweet::create($attributes);
+            $newtweet = Tweet::create($attributes);
             if (request('hashtags')) {
                 $Hashtagss = request('hashtags');
                 foreach ($Hashtagss as $tag) {
@@ -247,12 +253,22 @@ class TweetController extends Controller
                         $newHash = Hashtag::create([
                             'tag' => $tag
                         ]);
-                        $newHash->tweets()->attach($tweet->id);
+                        $newHash->tweets()->attach($newtweet->id);
                     } else {
-                        $existingTag->tweets()->attach($tweet->id);
+                        $existingTag->tweets()->attach($newtweet->id);
                     }
                 }
             }
+            $tweetowner = $tweet->user;
+
+            $notificationData = [
+                'tweet_id' => $tweet->id,
+                'replier_id' => $loggedInUser->id,
+                
+                'replier_name'=>$loggedInUser->name,
+                'replier_profile'=>$loggedInUser->profile,
+            ];
+            $tweetowner->notify(new NewReply($notificationData));
         } else {
             abort(403);
         }
@@ -276,8 +292,9 @@ class TweetController extends Controller
             ->get();
         $search = Request::input('search');
         $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
-   
-        
+        $Notificationscount = $loggedInUser->unreadNotifications->count();
+
+
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
             $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
         })
@@ -293,7 +310,8 @@ class TweetController extends Controller
         return Inertia::render(
             'ShowTweet',
             [
-            'hashtags'=>$Hashtag,
+                'hashtags' => $Hashtag,
+                'Notificationscount'=>$Notificationscount,
 
                 "mutualFollowing" => $mutualFollowing,
                 'tweet' => $tweet,
@@ -348,6 +366,14 @@ class TweetController extends Controller
                 'tweet_id' => $tweet->id,
             ]);
             $retweet->save();
+            $tweetowner = $tweet->user;
+            $notificationData = [
+                'tweet_id' => $tweet->id,
+                'retweeter_id' => $loggedInUser->id,
+                'retweeter_name'=>$loggedInUser->name,
+                'retweeter_profile'=>$loggedInUser->profile,
+            ];
+            $tweetowner->notify(new NewRetweet($notificationData));
         }
         $isReTweeted = !$isReTweeted;
         $response = [
@@ -360,34 +386,103 @@ class TweetController extends Controller
     public function Hashtags($tag)
     {
         $hashtag = Hashtag::find($tag);
-        if($hashtag)
-        {
-        $tagId=$hashtag->id;
-        $loggedInUser = auth()->user();
+        if ($hashtag) {
+            $tagId = $hashtag->id;
+            $loggedInUser = auth()->user();
+            $search = Request::input('search');
+            $followingIds = $loggedInUser->following()->pluck('user_id');
+            $allTweets = Tweet::with(['user', 'likes'])
+                ->whereNull('parent_tweet_id')
+                ->whereHas('hashtags', function ($query) use ($tagId) {
+                    $query->where('hashtags.id', $tagId);
+                })
+                ->withCount(['likes', 'replies', 'retweets'])
+                ->addSelect([
+                    'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                        ->whereColumn('tweet_id', 'tweets.id')
+                        ->where('user_id', $loggedInUser->id)
+                        ->limit(1),
+                    'isReTweeted' => Retweet::selectRaw('IF(COUNT(id) > 0, 1, 0)')
+                        ->whereColumn('tweet_id', 'tweets.id')
+                        ->where('user_id', $loggedInUser->id)
+                        ->limit(1),
+                    'retweetedBy' => Retweet::select('name')
+                        ->join('users', 'retweets.user_id', '=', 'users.id')
+                        ->whereColumn('tweet_id', 'tweets.id')
+                        ->limit(1),
+                ])
+                ->latest()
+                ->get();
+        $Notificationscount = $loggedInUser->unreadNotifications->count();
+       
+        
+            $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
+            $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
+                $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
+            })
+                ->whereNotIn('id', $loggedInUser->following()->pluck('user_id'))->where('id', '!=', $loggedInUser->id)->take(2)->get();
+            $mutualFollowing = $mutualFollowing->map(function ($user) {
+                $user->is_following = false;
+                return $user;
+            });
+
+
+            return Inertia::render('Feed', [
+                'users' => $search ? User::query()
+                    ->where(function ($query) use ($search) {
+                        $query->where('name', 'like', '%' . $search . '%')
+                            ->orWhere('username', 'like', '%' . $search . '%');
+                    })
+                    ->where('id', '!=', auth()->id())
+                    ->limit(20)
+                    ->get() : [],
+            'Notificationscount'=>$Notificationscount,
+            'tweets' => $allTweets,
+                "admin" => "ansdaultana",
+                "mutualFollowing" => $mutualFollowing,
+                'hashtags' => $Hashtag,
+            ]);
+        } else {
+
+            abort(404);
+        }
+    }
+
+
+    public function notification()
+    {
+        $loggedInUser = Auth::user();
         $search = Request::input('search');
-        $followingIds = $loggedInUser->following()->pluck('user_id');
-        $allTweets = Tweet::with(['user', 'likes'])
-        ->whereNull('parent_tweet_id')
-        ->whereHas('hashtags', function ($query) use ($tagId) {
-            $query->where('hashtags.id', $tagId);
-        })
-        ->withCount(['likes', 'replies', 'retweets'])
-        ->addSelect([
-            'isLiked' => Like::selectRaw('IF(COUNT(id) > 0, 1, 0)')
-                ->whereColumn('tweet_id', 'tweets.id')
-                ->where('user_id', $loggedInUser->id)
-                ->limit(1),
-            'isReTweeted' => Retweet::selectRaw('IF(COUNT(id) > 0, 1, 0)')
-                ->whereColumn('tweet_id', 'tweets.id')
-                ->where('user_id', $loggedInUser->id)
-                ->limit(1),
-            'retweetedBy' => Retweet::select('name')
-                ->join('users', 'retweets.user_id', '=', 'users.id')
-                ->whereColumn('tweet_id', 'tweets.id')
-                ->limit(1),
-        ])
-        ->latest()
-        ->get();
+
+        $notifications = $loggedInUser->unreadNotifications;
+//dd($notifications);
+$notifications->markAsRead();
+
+        foreach ($notifications as $noti) {
+            if ($noti['type'] === 'App\Notifications\NewReply') {
+                $noti['message'] = 'Replied to Your Tweet';
+                $noti['name'] = $noti->data['replier_name'];
+                $noti['profile'] = $noti->data['replier_profile'];
+                $noti['tweet_url'] = $noti->data['tweet_id']; 
+            } else if ($noti['type'] === 'App\Notifications\NewRetweet') {
+                $noti['message'] = 'Retweeted Your Tweet';
+                $noti['name'] = $noti->data['retweeter_name'];
+                $noti['profile'] = $noti->data['retweeter_profile'];
+                $noti['tweet_url'] = $noti->data['tweet_id']; 
+            } else if ($noti['type'] === 'App\Notifications\NewLike') {
+                $noti['message'] = 'Liked Your Tweet.';
+                $noti['name'] = $noti->data['liker_name'];
+                $noti['profile'] = $noti->data['liker_profile'];
+                $noti['tweet_url'] = $noti->data['tweet_id']; 
+            } else if ($noti['type'] === 'App\Notifications\NewFollower') {
+                $noti['message'] = 'has started Following You.';
+                $noti['name'] = $noti->data['follower_name'];
+                $noti['profile'] = $noti->data['follower_profile'];
+            }
+            // Replace this with the correct key to access the tweet URL in your notification data
+
+        };
+
         $Hashtag = Hashtag::withCount('tweets')->orderBy('tweets_count', 'desc')->take(4)->get();
         $mutualFollowing = User::whereHas('followers', function ($query) use ($loggedInUser) {
             $query->whereIn('follower_id', $loggedInUser->following()->pluck('user_id'));
@@ -398,9 +493,10 @@ class TweetController extends Controller
             return $user;
         });
 
-
-        return Inertia::render('Feed', [
-            'users' => $search ? User::query()
+        return Inertia::render(
+            'Notification',
+            [
+                'users' => $search ? User::query()
                 ->where(function ($query) use ($search) {
                     $query->where('name', 'like', '%' . $search . '%')
                         ->orWhere('username', 'like', '%' . $search . '%');
@@ -408,16 +504,13 @@ class TweetController extends Controller
                 ->where('id', '!=', auth()->id())
                 ->limit(20)
                 ->get() : [],
-            'tweets' => $allTweets,
-            "admin" => "ansdaultana",
-            "mutualFollowing" => $mutualFollowing,
-            'hashtags'=>$Hashtag,
-        ]);
-        }
-        else {
-            
-            abort(404);
-        }
+         
+                'notification' => $notifications,
+                "mutualFollowing" => $mutualFollowing,
+                'hashtags' => $Hashtag,
+    
+            ]
+        );
     }
     /**
      * Show the form for editing the specified resource.
